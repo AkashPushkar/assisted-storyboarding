@@ -1,0 +1,12 @@
+# folder
+*.pyc
+*.swp
+config.json
+
+# folder 
+__pycache__
+media/
+
+# database
+db.sqlite3
+

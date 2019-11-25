@@ -1,4 +1,4 @@
-# folder
+# files
 *.pyc
 *.swp
 config.json
@@ -6,6 +6,7 @@ config.json
 # folder 
 __pycache__
 media/
+storyboard/**/images
 
 # database
 db.sqlite3

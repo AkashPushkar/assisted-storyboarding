@@ -1,0 +1,68 @@
+.canvas-inline{
+	display: inline-block;
+	border:1px solid #000000;
+}
+
+.canvas-block{
+	display: block;
+	border:1px solid #000000;
+}
+
+.canvas-layer{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+
+.horizontal-scroll{
+	overflow: scroll;
+	background-color: white;
+	white-space: nowrap; 
+}
+
+
+.canvas1-size{
+	width :500px;
+	height :500px;
+}
+
+.canvas-alignment{
+	position: relative;
+	margin-right: auto;
+    margin-left: auto;
+}
+
+
+.canvas2-size{
+	width: 800px;
+	height: 500px;
+}
+
+.tool-bar1{
+	background-color: #3b5d64;
+}
+
+.tool-bar2{
+	background-color: #a5d66e;
+}
+
+
+/* HIDE RADIO */
+[type=radio] { 
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + img {
+  cursor: pointer;
+  margin-right: 2em;
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + img {
+  outline: 2px solid #f00;
+}

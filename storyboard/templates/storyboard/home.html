@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width initial-scale=1">
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static '/storyboard/css/base.css' %}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+	<title>Storyboarding</title>
+
+</head>
+<body>
+
+	<div class="container">
+
+		<p>Naviagation bar here</p>
+
+
+
+<!-- **************************************************************************************************************************************************
+		Paint Toolbar Start			Paint Toolbar Start		Paint Toolbar Start			Paint Toolbar Start			Paint Toolbar Start			
+************************************************************************************************************************************************** -->
+		<div class="row">
+
+			<div class="col-sm-12 tool-bar1">
+
+				<!-- Color selector -->
+				<div class="btn-group p-1">
+					<input class="btn-secondary" id="tb1-lc" type="color" name="line-color" value="#000000">
+				</div>
+
+				<!-- Line width -->
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary" type="button">
+						<i class="fa">&#128396;</i>
+					</button>
+					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<input class="dropdown-item" id="tb1-lw" type="range" min="1" max="20" value="3" oninput="tb1-lwn.value = tb1-lw.value">
+						<output class="dropdown-item"id="tb1-lwn" for="lw"></output>
+					</div>
+				</div>
+
+				<!-- Eraser -->
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary" id="eraser_button" type="button">
+						<i class="fas fa-eraser"></i> 
+					</button>
+					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button">
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<div class="dropdown-menu">
+						<input class="dropdown-item" id="tb1-es" type="range" name="eraser" min="1" max="20" value="3" oninput="eraser_oin.value = eraser_oi_size.value">
+						<output class="dropdown-item"id="eraser_oin" for="eraser_oi_size"></output>
+					</div>
+				</div>
+
+				<!-- Undo -->
+				<div class="btn-group p-1">
+					<button id="undo_element" class="btn btn-secondary">
+						<i class="fas fa-undo"></i>
+					</button>
+				</div>
+
+				<!-- Redo -->
+				<div class="btn-group p-1">
+					<button id="redo_element"class="btn btn-secondary">
+						<i class="fas fa-redo"></i>
+					</button>
+				</div>
+
+				<!-- Save -->
+				<div class="btn-group p-1">
+					<button id="save_element" class="btn btn-secondary" data-toggle="modal" data-target="#save">
+						<i class="fas fa-save"></i>
+					</button>
+				</div>
+
+
+				<div class="modal" id="save" tabindex="-1" arai-labelledby="true" aria-hidden="false">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title"> Save Element </h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          						<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+
+							<div class="modal-body">
+								<input type="text" id="ip-mb-tb1-sv">
+							</div>
+
+							<div class="modal-footer">
+								<button id="btn-mf-tb1-sv" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+
+
+				<!-- Copy -->
+				<div class="btn-group p-1">
+					<button id="clone_element" class="btn btn-secondary">
+						<i class="fas fa-clone"></i>
+					</button>
+				</div>
+
+
+				<!-- Download -->
+				<div class="btn-group p-1">
+					<button id="download_element" class="btn btn-secondary">
+						<i class="fas fa-download"></i>
+					</button>
+				</div>
+
+
+				<!-- Clear Canvas -->
+				<div class="btn-group p-1">
+					<input class="btn btn-danger" id="clear_canvas" type="button" value="Clear canvas">
+				</div>	
+			</div>
+		
+		</div>
+
+
+
+<!-- **************************************************************************************************************************************************
+		 Paint Toolbar End   Paint Toolbar End   Paint Toolbar End	 	Paint Toolbar End	 Paint Toolbar End 			Paint Toolbar End
+************************************************************************************************************************************************** -->
+
+		<div class="row">
+
+			<div class="col-sm-12 tool-bar1">
+				
+				<!--  Background Image-->
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary" type="button">
+						Background
+					</button>
+					<input class="btn btn-light" id="background_image" list="bi" placeholder="enter/select category">
+					<datalist id="bi">
+						<option value="cat">
+						<option value="car">
+						<option value="dog">
+						<option value="person">
+					</datalist>
+					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<div class="dropdown-menu">
+						<input class="dropdown-item" id="get_images" type="button" value="Get Images">
+						<input class="dropdown-item" id="add_background_image" type="button" value="Add Background">
+						<input class="dropdown-item" id="remove_background_image" type="button" value="Remove Background">	
+					</div>
+				</div>
+
+				<!-- Modal button -->
+				<div class="btn-group p-1">
+					<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#elementModalWindow">
+						Saved Elements
+					</button>
+				</div>
+				
+
+			</div>
+		</div>
+
+
+<!-- **************************************************************************************************************************************************
+		 Element window modal 			Element window modal 			 Element window modal 			Element window modal
+************************************************************************************************************************************************** -->
+
+
+		<div class="modal fade" id="elementModalWindow" tabindex="-1" aria-labelledby="titleElementWindow" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modalTitle">Saved Elements</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          					<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+
+					<div class="modal-body" id="elementModalWindowBody">
+						<!-- <div class="img-fluid img-thumbnail">
+							<img src="">
+							<p>name</p>
+
+						</div> -->
+
+					</div>
+					
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+
+<!-- **************************************************************************************************************************************************
+		 Element window modal 			Element window modal 			 Element window modal 			Element window modal
+************************************************************************************************************************************************** -->
+		
+		<div class="row mt-3">
+			<div class="col-sm-12">
+				<div class="horizontal-scroll" id="average-images">
+						
+
+				</div>
+			</div>
+		</div>
+
+		<div class="row mt-3">
+			<div class="col-sm-12">
+					<div class="canvas1-size canvas-alignment">
+						<canvas id="objectInput_image_background" width="500" height="500" class="canvas-inline canvas-layer" style="z-index: 0;"></canvas>
+						<canvas id="objectInput" width="500" height="500" class=" canvas-inline canvas-layer" style="z-index: 1;"></canvas>
+				</div>
+			</div>
+		</div>
+
+
+
+
+<!-- **************************************************************************************************************************************************
+		Paint Toolbar Start			Paint Toolbar Start		Paint Toolbar Start			Paint Toolbar Start			Paint Toolbar Start			
+************************************************************************************************************************************************** -->
+		<div class="row mt-3">
+
+			<div class="col-sm-12 tool-bar2">
+
+				<!-- Color selector -->
+				<div class="btn-group p-1">
+					<input class="btn-secondary" id="tb2-lc" type="color" name="line-color" value="#000000">
+				</div>
+
+				<!-- Line width -->
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary" type="button">
+						<i class="fa">&#128396;</i>
+					</button>
+					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+						<input class="dropdown-item" id="tb2-lw" type="range" min="1" max="20" value="3" oninput="tb2-lwn.value = tb2-lw.value">
+						<output class="dropdown-item"id="tb2-lwn" for="lw"></output>
+					</div>
+				</div>
+
+				<!-- Eraser -->
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary" id="tb2-er" type="button">
+						<i class="fas fa-eraser"></i> 
+					</button>
+					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button">
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<div class="dropdown-menu">
+						<input class="dropdown-item" id="tb2-es" type="range" name="eraser" min="1" max="20" value="3" oninput="eraser_oin.value = eraser_oi_size.value">
+						<output class="dropdown-item"id="tb2-esn" for="eraser_oi_size"></output>
+					</div>
+				</div>
+
+				<!-- Move -->
+				<div class="btn-group p-1">
+					<button id="tb2-mv" class="btn btn-secondary">
+						<i class="fas fa-arrows-alt"></i>
+					</button>
+				</div>
+
+				<!-- Undo -->
+				<div class="btn-group p-1">
+					<button id="tb2-un" class="btn btn-secondary">
+						<i class="fas fa-undo"></i>
+					</button>
+				</div>
+
+				<!-- Redo -->
+				<div class="btn-group p-1">
+					<button id="tb2-re"class="btn btn-secondary">
+						<i class="fas fa-redo"></i>
+					</button>
+				</div>
+
+				<!-- Save -->
+				<div class="btn-group p-1">
+					<button id="tb2-sv" class="btn btn-secondary">
+						<i class="fas fa-save"></i>
+					</button>
+				</div>
+
+				<!-- Copy -->
+				<div class="btn-group p-1">
+					<button id="tb2-cl" class="btn btn-secondary">
+						<i class="fas fa-clone"></i>
+					</button>
+				</div>
+
+
+				<!-- Download -->
+				<div class="btn-group p-1">
+					<button id="tb2-dw" class="btn btn-secondary">
+						<i class="fas fa-download"></i>
+					</button>
+				</div>
+
+
+				<!-- Clear Canvas -->
+				<div class="btn-group p-1">
+					<input class="btn btn-danger" id="tb2-cc" type="button" value="Clear canvas">
+				</div>	
+
+				<div class="btn-group p-1">
+					<input class="btn btn-danger" id="tb2-3D" type="button" value="3D">
+				</div>	
+			</div>
+		
+		</div>
+
+
+<!-- **************************************************************************************************************************************************
+		 Paint Toolbar End   Paint Toolbar End   Paint Toolbar End	 	Paint Toolbar End	 Paint Toolbar End 			Paint Toolbar End
+************************************************************************************************************************************************** -->
+		<div class="row">
+			<div class="col-sm-12 tool-bar2">
+				<div class="btn-group p-1">
+					<button id="tb2-as" class="btn btn-secondary">
+						Save to storyboard
+					</button>
+				</div>
+
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary">
+						Layer
+					</button>
+					<button id="tb2-al" class="btn btn-secondary" title="Add Layer">
+						<i class="fas fa-plus"></i>
+					</button>
+					<button id="tb2-rl" class="btn btn-secondary" title="Remove Layer">
+						<i class="fas fa-minus"></i>
+					</button>
+					<select class="btn btn-secondary" id="tb2-lyr">
+						<option value="1">Layer 1</option>
+					</select>
+				</div>
+
+					
+				</div>
+			</div>
+
+			
+			
+		</div>
+		
+		<div class="row mt-3">
+			<div class= "col-sm-12">
+				<div class="canvas2-size canvas-alignment" id="sc">
+					<canvas width="800" height="500" class="canvas-inline canvas-layer" style="z-index: 0;"></canvas>
+				</div>
+			</div>
+		</div>
+
+
+
+		<div class="row mt-3">
+			<div class="col-sm-12">
+				<div class="horizontal-scroll" id="sb">
+
+				</div>
+			</div>
+
+			<div class="modal fade" id='mw-sb' tabindex="-1" aria-hidden='true'>
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5>Gallery</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          						<span aria-hidden="true">&times;</span>
+							</button>							
+						</div>
+						<div id="mb-sb" class="modal-body">
+															
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+						</div>
+						
+					</div>
+					
+				</div>
+			</div>
+
+		</div>	
+		
+	</div>
+
+	
+
+	<!-- FontAwesome js file -->
+	<script src="https://kit.fontawesome.com/3c2cba7c98.js" crossorigin="anonymous"></script>
+
+
+
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.2/jszip.js"></script>
+	  
+	<script type="text/javascript" src="{% static '/storyboard/js/css_init.js' %}"></script>
+	<script type="text/javascript" src="{% static '/storyboard/js/dom_loader.js' %}"></script>
+	<script type="text/javascript" src="{% static '/storyboard/js/sketchpad.js' %}"></script>
+</body>
+</html>

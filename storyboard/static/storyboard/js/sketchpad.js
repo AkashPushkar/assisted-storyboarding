@@ -21,6 +21,14 @@ ctx_objectInput.lineCap = 'round'
 var eraser = false
 
 
+// var Drawing mode
+var drawing_mode = true
+
+// data to be moved in sc
+var move_data
+
+var moving = false
+var initial_X, initial_Y
 /************************************************************************************************************
 
 @fucntion name: draw
@@ -133,6 +141,7 @@ var engage = function(e, ctx, es, lw, lc){
 var disengage = function(e){
 	e.preventDefault();
 	paint = false;
+	moving = false;
 }
 
 
@@ -188,10 +197,23 @@ var clearCanvas = function(ctx){
 
 // Clone Element
 var cloneElement = function(ctx1, ctx2){
-	img_data_copy = ctx1.toDataURL();
-	var img_copy = new Image();
-	img_copy.src = img_data_copy;
-	ctx2.drawImage(img_copy, 0, 0, ctx2.canvas.width/1.6, ctx2.canvas.height);
+	// img_data_copy = ctx1.toDataURL();
+	// var img_copy = new Image();
+	// img_copy.src = img_data_copy;
+
+	// var canvas = new fabric.Canvas(ctx2.canvas)
+
+	// var imgInstance = new fabric.Image(img_copy, {
+	//   left: 100,
+	//   top: 100,
+	//   angle: 30,
+	//   opacity: 0.85
+	// });
+	// canvas.add(imgInstance);
+	// img_data_copy = ctx1.toDataURL();
+	// var img_copy = new Image();
+	// img_copy.src = img_data_copy;
+	ctx2.drawImage(ctx1, 0, 0, ctx2.canvas.width/1.6, ctx2.canvas.height);
 }
 
 
@@ -242,7 +264,6 @@ var addLayer = function(list, cv){
 	cv.appendChild(temp);
 
 	changeSCEventListener(value-1, value);
-
 };
 
 
@@ -295,16 +316,42 @@ var addScene = function(cv, lib){
 }
 
 
+
+// move the data in a given layer
+var moveGetData = function(e, ctx){
+	rect = ctx.canvas.getBoundingClientRect();
+	initial_X = e.clientX - rect.left;
+	initial_Y = e.clientY - rect.top;
+	move_data = ctx.getImageData(0,0, ctx.canvas.width, ctx.canvas.height);
+	moving = true
+}
+
+var movePutData = function(e, ctx){
+	if (moving){
+		ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height);
+		ctx.putImageData(move_data, e.clientX-rect.left -initial_X, e.clientY - rect.top-initial_Y);
+	}
+}
+
+
 var scEngagePre = function(e){
 	e.preventDefault();
-	engage(e, sc.children[tb2_lyr.value-1].getContext("2d"), tb2_es.value, tb2_lw.value, tb2_lc.value);
-	// console.log(this.style.zIndex);
+	if (drawing_mode == true){
+		engage(e, sc.children[tb2_lyr.value-1].getContext("2d"), tb2_es.value, tb2_lw.value, tb2_lc.value);
+	} else{
+		moveGetData(e, sc.children[tb2_lyr.value-1].getContext("2d"))
+	}
 
 };
 
 var scDrawPre = function(e){
 	e.preventDefault();
-	draw(e, sc.children[tb2_lyr.value-1].getContext("2d"));
+	if (drawing_mode == true){
+		draw(e, sc.children[tb2_lyr.value-1].getContext("2d"));
+	} else{
+		movePutData(e, sc.children[tb2_lyr.value-1].getContext("2d"))
+	}
+	
 
 };
 
@@ -313,7 +360,7 @@ var scDrawPre = function(e){
 // Scene Canvas - Active Canvas
 var changeSCEventListener = function(previous, current){
 	if (sc.children[previous]) {
-		sc.children[previous].removeEventListener("mousedown", scEngagePre)
+		sc.children[previous].removeEventListener("mousedown", scEngagePre);
 		sc.children[previous].removeEventListener("mousemove", scDrawPre);
 		sc.children[previous].removeEventListener("mouseup", disengage);
 		sc.children[previous].removeEventListener("mouseleave", disengage);
@@ -322,7 +369,6 @@ var changeSCEventListener = function(previous, current){
 	sc.children[current].addEventListener("mousemove", scDrawPre);
 	sc.children[current].addEventListener("mouseup", disengage);
 	sc.children[current].addEventListener("mouseleave", disengage);
-
 };
 
 
@@ -392,7 +438,7 @@ var fetchImages =  function(categoryName){
 
 
 
-// self-executing anonymous function for avtivating scene canvas
+// self-executing anonymous function for activating scene canvas
 (function(){
 	var previous, current;
 	tb2_lyr.addEventListener('focus', function(){
@@ -532,7 +578,7 @@ tb2_al.addEventListener('click', function(){
 });
 
 
-// // Remove Layer
+// Remove Layer
 tb2_rl.addEventListener('click', function(e){
 	removeLayer(tb2_lyr, sc);
 });
@@ -545,9 +591,14 @@ tb2_as.addEventListener('click', function(e){
 
 
 // Move data
-// tb2_mv.addEventListener('click', function(e){
-
-// });
+tb2_mv.addEventListener('click', function(e){
+	drawing_mode = !drawing_mode
+	if (drawing_mode){
+		this.style.backgroundColor = "";
+	} else{
+		this.style.backgroundColor = "#2f3336";
+	}
+});
 
 
 tb2_er.addEventListener('click', function(e){

@@ -64,6 +64,7 @@ var tb2_mv = document.getElementById("tb2-mv");
 
 var tb2_3D = document.getElementById("tb2-3D");
  
+var tb2_sc = document.getElementById("tb2-sc");
 
 /**************************************************************************************************/
 /**************************				Modal Window					***************************/

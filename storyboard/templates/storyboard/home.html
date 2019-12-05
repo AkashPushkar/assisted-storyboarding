@@ -269,16 +269,28 @@
 					</button>
 
 					<div class="dropdown-menu">
-						<input class="dropdown-item" id="tb2-es" type="range" name="eraser" min="1" max="20" value="3" oninput="eraser_oin.value = eraser_oi_size.value">
-						<output class="dropdown-item"id="tb2-esn" for="eraser_oi_size"></output>
+						<input class="dropdown-item" id="tb2-es" type="range" name="eraser" min="1" max="1" value="3" oninput="eraser_oin.value = eraser_oi_size.value">
+						<output class="dropdown-item" id="tb2-esn" for="eraser_oi_size"></output>
 					</div>
 				</div>
+
+
 
 				<!-- Move -->
 				<div class="btn-group p-1">
 					<button id="tb2-mv" class="btn btn-secondary">
 						<i class="fas fa-arrows-alt"></i>
 					</button>
+
+					<!-- Scaling -->
+					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button">
+						<span class="sr-only">Toggle Dropdown</span>
+					</button>
+
+					<div class="dropdown-menu">
+						<input class="dropdown-item" id="tb2-sc" type="range" name="eraser" min="1" max="20" value="1">
+						<output class="dropdown-item" id="tb2-scn" for="eraser_oi_size"></output>
+					</div>
 				</div>
 
 				<!-- Undo -->

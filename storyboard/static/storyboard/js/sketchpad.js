@@ -400,6 +400,17 @@ var effect3D = function(btn, scene){
 };
 
 
+// Scaling of layer
+var scale = function(btn, ctx){
+	// let temp_img = new Image()
+	// temp_img.src = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.width).data
+
+	let cv = new OffscreenCanvas(ctx.canvas.width, ctx.canvas.height)
+	cv = cv.getContext("2d")
+	cv.drawImage(ctx.canvas, 0, 0)
+	ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width)
+	ctx.drawImage(cv.canvas, 0, 0, btn.value*ctx.canvas.width/10, btn.value*ctx.canvas.height/10)
+}
 
 
 var fetchImages =  function(categoryName){
@@ -615,13 +626,19 @@ tb2_mv.addEventListener('click', function(e){
 });
 
 
+// Eraser sc
 tb2_er.addEventListener('click', function(e){
 	erase(e, this, sc.children[tb2_lyr.value-1].getContext("2d"));
 });
 
-// Add to storyboard
 
 
+// Scaling a sc layer
+tb2_sc.addEventListener('change', function(e){
+	if (drawing_mode){
+		scale(this, sc.children[tb2_lyr.value-1].getContext("2d"))
+	}
+});
 
 
 // 3D effect

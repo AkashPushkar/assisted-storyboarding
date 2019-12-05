@@ -29,6 +29,9 @@ var move_data
 
 var moving = false
 var initial_X, initial_Y
+
+
+let state3D = false
 /************************************************************************************************************
 
 @fucntion name: draw
@@ -372,16 +375,27 @@ var changeSCEventListener = function(previous, current){
 };
 
 
-var rotate3D = function(scene){
-	scene.style.perspective = "300px";
+var effect3D = function(btn, scene){
+	// scene.style.perspective = "300px";
 	// scene.style.transform = "skewY(20deg)";
-	scene.style.transformstyle = "preserve-3D";
+	// scene.style.transformstyle = "preserve-3D";
+	if (state3D == true){
+		btn.style.backgroundColor = "#2f3336"
+		for(var i=0; i<scene.children.length; i++){
+			scene.children[i].style.opacity = (1-i*0.2);
+		}
+	} else {
+		btn.style.backgroundColor = ""
+		for(var i=0; i<scene.children.length; i++){
+			scene.children[i].style.opacity = 1;
+		}
+	} 
+	// for(var i=0; i<scene.children.length; i++){
+	// 	// scene.children[i].style.transformstyle = "preserve-3D"; 
 
-	for(var i=0; i<scene.children.length; i++){
-		// scene.children[i].style.transformstyle = "preserve-3D"; 
-		scene.children[i].style.opacity = (1-i*0.4);
-		scene.children[i].style.transform = "matrix(1,0,0,1,"+i*50 +","+ (-i*50)  +")";
-	}
+	// 	scene.children[i].style.opacity = (1-i*0.2);
+	// 	// scene.children[i].style.transform = "matrix(1,0,0,1,"+i*50 +","+ (-i*50)  +")";
+	// }
 
 };
 
@@ -610,7 +624,8 @@ tb2_er.addEventListener('click', function(e){
 
 
 
-// 3D
+// 3D effect
 tb2_3D.addEventListener('click', function(e){
-	rotate3D(sc);
+	state3D = !state3D
+	effect3D(this, sc);
 })

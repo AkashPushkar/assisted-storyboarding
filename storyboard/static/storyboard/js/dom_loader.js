@@ -66,6 +66,10 @@ var tb2_3D = document.getElementById("tb2-3D");
  
 var tb2_sc = document.getElementById("tb2-sc");
 
+var tb2_fs = document.getElementById("tb2-fs");
+
+var fsi = document.getElementById("fsi");
+
 /**************************************************************************************************/
 /**************************				Modal Window					***************************/
 /**************************************************************************************************/

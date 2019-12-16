@@ -182,7 +182,6 @@ var erase = function(e, btn, ctx){
 // Adding image background
 
 var addImage = function(ctx, img){
-	
 	ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
@@ -200,22 +199,7 @@ var clearCanvas = function(ctx){
 
 // Clone Element
 var cloneElement = function(ctx1, ctx2){
-	// img_data_copy = ctx1.toDataURL();
-	// var img_copy = new Image();
-	// img_copy.src = img_data_copy;
 
-	// var canvas = new fabric.Canvas(ctx2.canvas)
-
-	// var imgInstance = new fabric.Image(img_copy, {
-	//   left: 100,
-	//   top: 100,
-	//   angle: 30,
-	//   opacity: 0.85
-	// });
-	// canvas.add(imgInstance);
-	// img_data_copy = ctx1.toDataURL();
-	// var img_copy = new Image();
-	// img_copy.src = img_data_copy;
 	ctx2.drawImage(ctx1, 0, 0, ctx2.canvas.width/1.6, ctx2.canvas.height);
 }
 
@@ -287,10 +271,11 @@ var removeLayer = function(list, cv){
 // Add scene canvas to storyboard
 var addScene = function(cv, lib){
 	// var img_temp = new Image();
-	var temp_btn = document.createElement("button");
+	// var temp_btn = document.createElement("button");
 
-	temp_btn.setAttribute("data-toggle","modal");
-	temp_btn.setAttribute("data-target","modal");
+	// temp_btn.setAttribute("data-toggle","modal");
+	// temp_btn.setAttribute("data-target","modal");
+	
 	var temp_cs = cv.firstElementChild.cloneNode();
 
 	temp_cs = temp_cs.getContext("2d");
@@ -313,8 +298,6 @@ var addScene = function(cv, lib){
 	img_temp.style.margin = '3px';
 
 	lib.appendChild(img_temp);
-	// temp_btn.innerHTML = img_temp;
-	// lib.appendChild(temp_btn);
 
 }
 
@@ -325,14 +308,18 @@ var moveGetData = function(e, ctx){
 	rect = ctx.canvas.getBoundingClientRect();
 	initial_X = e.clientX - rect.left;
 	initial_Y = e.clientY - rect.top;
-	move_data = ctx.getImageData(0,0, ctx.canvas.width, ctx.canvas.height);
+	// move_data = ctx.getImageData(-300,-300, ctx.canvas.width+300, ctx.canvas.height+300);
+	// ctx.save()
 	moving = true
 }
 
 var movePutData = function(e, ctx){
 	if (moving){
-		ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height);
-		ctx.putImageData(move_data, e.clientX-rect.left -initial_X, e.clientY - rect.top-initial_Y);
+		ctx.save()
+		// ctx.putImageData(move_data, e.clientX-rect.left -initial_X-300, e.clientY - rect.top-initial_Y-300);
+		ctx.translate(e.clientX-rect.left-initial_X, e.clientY-rect.top-initial_Y);
+		// ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height);
+		ctx.restore()
 	}
 }
 
@@ -390,12 +377,7 @@ var effect3D = function(btn, scene){
 			scene.children[i].style.opacity = 1;
 		}
 	} 
-	// for(var i=0; i<scene.children.length; i++){
-	// 	// scene.children[i].style.transformstyle = "preserve-3D"; 
 
-	// 	scene.children[i].style.opacity = (1-i*0.2);
-	// 	// scene.children[i].style.transform = "matrix(1,0,0,1,"+i*50 +","+ (-i*50)  +")";
-	// }
 
 };
 
@@ -405,14 +387,17 @@ var scale = function(btn, ctx){
 	// let temp_img = new Image()
 	// temp_img.src = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.width).data
 
-	let cv = new OffscreenCanvas(ctx.canvas.width, ctx.canvas.height)
-	cv = cv.getContext("2d")
-	cv.drawImage(ctx.canvas, 0, 0)
-	ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width)
-	ctx.drawImage(cv.canvas, 0, 0, btn.value*ctx.canvas.width/10, btn.value*ctx.canvas.height/10)
+	// let cv = new OffscreenCanvas(ctx.canvas.width, ctx.canvas.height)
+	// cv = cv.getContext("2d")
+	// cv.drawImage(ctx.canvas, 0, 0)
+	// ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width)
+	// ctx.drawImage(cv.canvas, 0, 0, btn.value*ctx.canvas.width/10, btn.value*ctx.canvas.height/10)
+
+	ctx.scale(btn.value/10, btn.value/10)
 }
 
 
+// fetch images for object canvas
 var fetchImages =  function(categoryName){
 
 	let formData = new FormData();
@@ -460,6 +445,49 @@ var fetchImages =  function(categoryName){
 
 	};
 
+
+// fetch images for scene canvas
+var fetchSceneImages = function(cv, fsi){
+	let temp_cs = cv.firstElementChild.cloneNode();
+
+	temp_cs = temp_cs.getContext("2d");
+	let img_temp = new Image();
+	for (let i=0; i < cv.children.length; i++){
+		
+		let ctx_temp = cv.children[i].getContext("2d");
+		let name = 'Layer' + i;
+		let lib_temp = document.getElementById("mb-sb");
+		saveCanvas(ctx_temp, name, lib_temp);
+
+		temp_cs.drawImage(ctx_temp.canvas, 0, 0);	
+
+	}
+
+	img_temp = temp_cs.canvas.toDataURL();
+
+	let formData = new FormData();
+	formData.append('image', img_temp);
+	let csrftoken = Cookies.get('csrftoken');
+	// formData.append('csrfmiddlewaretoken', $('#csrf-helper input[name="csrfmiddlewaretoken"]').attr('value'));
+
+	let headers = new Headers();
+	headers.append('X-CSRFToken', csrftoken);
+
+	serverURL = '/fetchSceneImages/'
+
+	fetch(serverURL, {
+		method: 'POST',
+		body: formData,
+		headers: headers 
+	}).then(function(response){
+		// return response.body.getReader();
+		return response.blob();
+	}).then(function(body){
+		url = URL.createObjectURL(body);
+		fsi.src = url;
+	});
+	
+};
 
 
 
@@ -557,9 +585,17 @@ add_background_image.addEventListener('click', function(e){
 
 
 // Clone Element
+// clone_element.addEventListener('click', function(e){
+// 	var layer = tb2_lyr.value - 1;
+// 	ctx_temp = sc.children[layer].getContext("2d");
+// 	cloneElement(c_objectInput, ctx_temp);
+// }, false);
+
 clone_element.addEventListener('click', function(e){
-	var layer = tb2_lyr.value - 1;
-	ctx_temp = sc.children[layer].getContext("2d");
+	addLayer(tb2_lyr, sc);
+	let layer = tb2_lyr.length;
+	tb2_lyr.value = layer;
+	ctx_temp = sc.children[layer-1].getContext("2d");
 	cloneElement(c_objectInput, ctx_temp);
 }, false);
 
@@ -646,3 +682,9 @@ tb2_3D.addEventListener('click', function(e){
 	state3D = !state3D
 	effect3D(this, sc);
 })
+
+
+// 
+tb2_fs.addEventListener('click', function(e){
+	fetchSceneImages(sc, fsi)
+});

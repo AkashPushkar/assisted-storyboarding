@@ -8,6 +8,11 @@
 	<link rel="stylesheet" type="text/css" href="{% static '/storyboard/css/base.css' %}">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+
+	<!-- no ui slider -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.0.3/nouislider.css">
+
 	<title>Storyboarding</title>
 
 </head>
@@ -293,15 +298,27 @@
 					</button>
 
 					<!-- Scaling -->
-					<button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button">
+					<!-- <button class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button">
 						<span class="sr-only">Toggle Dropdown</span>
 					</button>
 
 					<div class="dropdown-menu">
 						<input class="dropdown-item" id="tb2-sc" type="range" name="eraser" min="1" max="20" value="1">
 						<output class="dropdown-item" id="tb2-scn" for="eraser_oi_size"></output>
-					</div>
+					</div> -->
 				</div>
+
+				<!-- Scaling -->
+				<div class="btn-group p-1">
+					<button id="tb2-sc-plus" class="btn btn-secondary">
+						<i class="fas fa-search-plus"></i>
+					</button>
+					<button id="tb2-sc-minus" class="btn btn-secondary">
+						<i class="fas fa-search-minus"></i>
+					</button>
+
+				</div>
+				
 
 				<!-- Undo -->
 				<div class="btn-group p-1">
@@ -352,6 +369,10 @@
 				<div class="btn-group p-1">
 					<input class="btn btn-danger" id="tb2-fs" type="button" value="fetch scenes">
 				</div>	
+
+				<div class="btn-group p-1">
+					<input class="btn btn-danger" id="tb2-3d-lyr" type="button" value="3d layer">
+				</div>	
 			</div>
 		
 		</div>
@@ -383,10 +404,30 @@
 					</select>
 				</div>
 
-					
+				<div class="btn-group p-1">
+					<button class="btn btn-secondary" id="tb2-3D-l">
+						<i class="fas fa-arrow-left"></i>
+					</button>
+
+					<button class="btn btn-secondary" id="tb2-3D-r">
+						<i class="fas fa-arrow-right"></i>
+					</button>
 				</div>
+
+					
 			</div>
 
+		</div>
+
+		<div class="row mt-5">
+			<div class="col-sm-12">
+				<div style="height: 250px;">
+					<div id="layers" ></div>
+				</div>
+				
+				<span id="unconstrained-values">values:</span> 
+ 
+			</div>
 		</div>
 		
 		<div class="row mt-3">
@@ -411,7 +452,7 @@
 				</div>
 			</div>
 
-			<div class="modal fade" id='mw-sb' tabindex="-1" aria-hidden='true'>
+			<!-- <div class="modal fade" id='mw-sb' tabindex="-1" aria-hidden='true'>
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -430,18 +471,18 @@
 					</div>
 					
 				</div>
-			</div>
+			</div> -->
 
-		</div>	
+		</div>
+
 		
 	</div>
 
-	
+
+
 
 	<!-- FontAwesome js file -->
 	<script src="https://kit.fontawesome.com/3c2cba7c98.js" crossorigin="anonymous"></script>
-
-
 
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -449,13 +490,30 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
+	<!-- For getting cookies  -->
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
 
+	<!-- Zip file transfer -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.2/jszip.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.2.0/fabric.min.js"></script>
+	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.2.0/fabric.min.js"></script> -->
 	  
+
+	<!-- Jquery UI for dragging-->
+	<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<!-- No UI slider -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.0.3/nouislider.js"></script>
+
+	<!--  -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/canvas2svg@1.0.16/canvas2svg.min.js"></script>
+	
+
+	<!--  -->
 	<script type="text/javascript" src="{% static '/storyboard/js/css_init.js' %}"></script>
 	<script type="text/javascript" src="{% static '/storyboard/js/dom_loader.js' %}"></script>
 	<script type="text/javascript" src="{% static '/storyboard/js/sketchpad.js' %}"></script>
+	<script type="text/javascript" src="{% static '/storyboard/js/layerVisualization.js' %}"></script>
+	<script type="text/javascript" src="{% static '/storyboard/js/eventListener.js' %}"></script>
 </body>
 </html>

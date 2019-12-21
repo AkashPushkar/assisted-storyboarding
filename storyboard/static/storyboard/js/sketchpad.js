@@ -32,23 +32,11 @@ var initial_X, initial_Y
 
 
 let state3D = false
-/************************************************************************************************************
 
-@fucntion name: draw
 
-@brief:
-	This is for drawing lines
 
-@description:
-	For drawing lines
 
-@params:
-	event
 
-@return:
-	None
-
-*************************************************************************************************************/
 var draw = function(e, ctx){
 	
 	// e.preventDefault();
@@ -77,22 +65,6 @@ var draw = function(e, ctx){
 	}
 }
 
-
-/************************************************************************************************************
-
-@fucntion name: 
-
-@brief:
-	
-@description:
-	
-@params:
-	event
-
-@return:
-	
-
-*************************************************************************************************************/
 
 var engage = function(e, ctx, es, lw, lc){
 
@@ -124,45 +96,12 @@ var engage = function(e, ctx, es, lw, lc){
 
 
 
-/************************************************************************************************************
- *
- *@fucntion name: disengage
- *
- *@brief:
- *	 
- *@description:
- *	
- *@params:
- *	event
- *
- *@return:
- * 	
- *
-*************************************************************************************************************/
-
-
 var disengage = function(e){
 	e.preventDefault();
 	paint = false;
 	moving = false;
 }
 
-
-/************************************************************************************************************
-
-@fucntion name: eraser
-
-@brief:
-	
-@description:
-	
-@params:
-	event
-
-@return:
-	
-
-*************************************************************************************************************/
 
 
 var erase = function(e, btn, ctx){
@@ -191,7 +130,6 @@ var addImage = function(ctx, img){
 
 // Remove image
 var clearCanvas = function(ctx){
-
 	ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height)
 }
 
@@ -244,7 +182,7 @@ var addLayer = function(list, cv){
 
 	temp = cv.lastElementChild.cloneNode();
 	
-	temp.style.zIndex = (temp.style.zIndex + 1);
+	temp.style.zIndex = (parseInt(temp.style.zIndex) + 1);
 	temp.getContext("2d").lineJoin = 'round';
 	temp.getContext("2d").lineCap = 'round';
 
@@ -258,14 +196,16 @@ var addLayer = function(list, cv){
 var removeLayer = function(list, cv){
 	result = window.confirm("Do you really want to delete the layer? (This will delete the layer and reaarange the layer names)");
 	if (result==true){
-		changeSCEventListener(list.lastElementChild.value, (list.lastElementChild.value-1));
-		cv.removeChild(cv.lastElementChild);
+		if (list.value == list.lastElementChild.value){
+			changeSCEventListener(list.lastElementChild.value-1, (list.lastElementChild.value-2));
+		}
+		
+		cv.removeChild(cv.children[list.value-1]);
 		list.removeChild(list.lastElementChild);
-
 	}
-	
-
 }
+
+
 
 
 // Add scene canvas to storyboard
@@ -308,18 +248,16 @@ var moveGetData = function(e, ctx){
 	rect = ctx.canvas.getBoundingClientRect();
 	initial_X = e.clientX - rect.left;
 	initial_Y = e.clientY - rect.top;
-	// move_data = ctx.getImageData(-300,-300, ctx.canvas.width+300, ctx.canvas.height+300);
-	// ctx.save()
+	move_data = ctx.getImageData(0,0, ctx.canvas.width, ctx.canvas.height);
 	moving = true
 }
 
+
 var movePutData = function(e, ctx){
 	if (moving){
-		ctx.save()
-		// ctx.putImageData(move_data, e.clientX-rect.left -initial_X-300, e.clientY - rect.top-initial_Y-300);
-		ctx.translate(e.clientX-rect.left-initial_X, e.clientY-rect.top-initial_Y);
-		// ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height);
-		ctx.restore()
+		ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height);
+		ctx.putImageData(move_data, e.clientX-rect.left -initial_X, e.clientY - rect.top-initial_Y);
+		// ctx.translate(e.clientX-rect.left-initial_X, e.clientY-rect.top-initial_Y);
 	}
 }
 
@@ -341,20 +279,23 @@ var scDrawPre = function(e){
 	} else{
 		movePutData(e, sc.children[tb2_lyr.value-1].getContext("2d"))
 	}
-	
 
 };
 
 
 
+
 // Scene Canvas - Active Canvas
 var changeSCEventListener = function(previous, current){
+	
 	if (sc.children[previous]) {
 		sc.children[previous].removeEventListener("mousedown", scEngagePre);
 		sc.children[previous].removeEventListener("mousemove", scDrawPre);
 		sc.children[previous].removeEventListener("mouseup", disengage);
 		sc.children[previous].removeEventListener("mouseleave", disengage);
 	}
+
+
 	sc.children[current].addEventListener("mousedown", scEngagePre);
 	sc.children[current].addEventListener("mousemove", scDrawPre);
 	sc.children[current].addEventListener("mouseup", disengage);
@@ -362,19 +303,22 @@ var changeSCEventListener = function(previous, current){
 };
 
 
+
+// CSS 3d visualization of the scene canvas
 var effect3D = function(btn, scene){
-	// scene.style.perspective = "300px";
-	// scene.style.transform = "skewY(20deg)";
-	// scene.style.transformstyle = "preserve-3D";
 	if (state3D == true){
-		btn.style.backgroundColor = "#2f3336"
+		btn.style.backgroundColor = "#2f3336";
+		scene.style.border = "#2f3336"
+		scene.style.perspective = '20em'
 		for(var i=0; i<scene.children.length; i++){
-			scene.children[i].style.opacity = (1-i*0.2);
+			scene.children[i].style.transform = 'translateZ('+(i*(-50))+'px) rotateY(0deg)';
+			scene.children[i].style.border = "0";
 		}
 	} else {
 		btn.style.backgroundColor = ""
 		for(var i=0; i<scene.children.length; i++){
-			scene.children[i].style.opacity = 1;
+			scene.children[i].style.transform = '';
+			scene.children[i].style.border = "";
 		}
 	} 
 
@@ -383,18 +327,32 @@ var effect3D = function(btn, scene){
 
 
 // Scaling of layer
-var scale = function(btn, ctx){
+var scale = function(btn, ctx, change){
 	// let temp_img = new Image()
-	// temp_img.src = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.width).data
+	// let temp_img = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.width);
+	// temp_img.src = ctx.canvas.toDataURL()
+	// ctx.putImageData(temp_img, 0, 0, change*ctx.canvas.width , change*ctx.canvas.height);
 
-	// let cv = new OffscreenCanvas(ctx.canvas.width, ctx.canvas.height)
-	// cv = cv.getContext("2d")
-	// cv.drawImage(ctx.canvas, 0, 0)
-	// ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width)
-	// ctx.drawImage(cv.canvas, 0, 0, btn.value*ctx.canvas.width/10, btn.value*ctx.canvas.height/10)
+	let cv = new OffscreenCanvas(ctx.canvas.width, ctx.canvas.height)
+	cv = cv.getContext("2d")
+	cv.drawImage(ctx.canvas, 0, 0)
+	ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width)
+	ctx.drawImage(cv.canvas, 0, 0, change*ctx.canvas.width , change*ctx.canvas.height)
 
-	ctx.scale(btn.value/10, btn.value/10)
+	// let c2s = new C2S(ctx.canvas.width, ctx.canvas.height); 
+	// c2s.drawImage(ctx.canvas, 0, 0, ctx.canvas.width, ctx.canvas.height);
+	// let data = c2s.getSerializedSvg(true)
+	// let temp_img = new Image();
+	// let data = c2s.getSerializedSvg(true);
+	// temp_img.src = c2s.getSerializedSvg(true);
+
+	// ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width);
+	// ctx.drawImage(temp_img, 0, 0, change*ctx.canvas.width , change*ctx.canvas.height);
+
+	// ctx.scale(btn.value/10, btn.value/10)
 }
+
+
 
 
 // fetch images for object canvas
@@ -446,47 +404,45 @@ var fetchImages =  function(categoryName){
 	};
 
 
+
 // fetch images for scene canvas
 var fetchSceneImages = function(cv, fsi){
-	let temp_cs = cv.firstElementChild.cloneNode();
+	// let temp_cs = cv.firstElementChild.cloneNode();
 
-	temp_cs = temp_cs.getContext("2d");
+	// temp_cs = temp_cs.getContext("2d");
 	let img_temp = new Image();
 	for (let i=0; i < cv.children.length; i++){
+
+		let temp_cs = cv.firstElementChild.cloneNode();
+
+		temp_cs = temp_cs.getContext("2d");
 		
-		let ctx_temp = cv.children[i].getContext("2d");
-		let name = 'Layer' + i;
-		let lib_temp = document.getElementById("mb-sb");
-		saveCanvas(ctx_temp, name, lib_temp);
+		let c_temp = cv.children[i];
+		// let name = 'Layer' + i;
+		// let lib_temp = document.getElementById("mb-sb");
+		// saveCanvas(ctx_temp, name, lib_temp);
 
-		temp_cs.drawImage(ctx_temp.canvas, 0, 0);	
+		temp_cs.drawImage(c_temp, 0, 0);	
 
+		img_temp = temp_cs.canvas.toDataURL();
+
+		let formData = new FormData();
+		formData.append('image', img_temp);
+		let csrftoken = Cookies.get('csrftoken');
+		// formData.append('csrfmiddlewaretoken', $('#csrf-helper input[name="csrfmiddlewaretoken"]').attr('value'));
+
+		let headers = new Headers();
+		headers.append('X-CSRFToken', csrftoken);
+
+		serverURL = '/fetchSceneImages/'
+
+		fetch(serverURL, {
+			method: 'POST',
+			body: formData,
+			headers: headers 
+		});
 	}
 
-	img_temp = temp_cs.canvas.toDataURL();
-
-	let formData = new FormData();
-	formData.append('image', img_temp);
-	let csrftoken = Cookies.get('csrftoken');
-	// formData.append('csrfmiddlewaretoken', $('#csrf-helper input[name="csrfmiddlewaretoken"]').attr('value'));
-
-	let headers = new Headers();
-	headers.append('X-CSRFToken', csrftoken);
-
-	serverURL = '/fetchSceneImages/'
-
-	fetch(serverURL, {
-		method: 'POST',
-		body: formData,
-		headers: headers 
-	}).then(function(response){
-		// return response.body.getReader();
-		return response.blob();
-	}).then(function(body){
-		url = URL.createObjectURL(body);
-		fsi.src = url;
-	});
-	
 };
 
 
@@ -505,186 +461,7 @@ var fetchSceneImages = function(cv, fsi){
 	
 	window.onload(changeSCEventListener(tb2_lyr.value-1, tb2_lyr.value-1));
 
-	// window.onload(function(){
-	// 	sc.children[0].getContext("2d").lineJoin = 'round';
-	// 	tb2_lyr.children[0].getContext("2d").lineCap = 'round';		
-	// });
-	
-
 })();
 
 
 
-/***********************************************************************************/
-/* Event Listeners */
-
-// Draw on mouse events
-c_objectInput.addEventListener('mousedown', function(e){
-	e.preventDefault();
-	engage(e, ctx_objectInput, tb1_es.value, tb1_lw.value, tb1_lc.value);
-}, false);
-
-c_objectInput.addEventListener('mousemove', function(e){
-	e.preventDefault();
-	draw(e, ctx_objectInput);
-}, false);
-
-
-c_objectInput.addEventListener('mouseup', disengage, false);
-
-c_objectInput.addEventListener('mouseleave', disengage, false);
-
-
-// Draw on touch events
-c_objectInput.addEventListener('touchstart', function(e){
-	e.preventDefault();
-	engage(e, ctx_objectInput, tb1_es.value, tb1_lw.value, tb1_lc.value);
-}, false);
-
-c_objectInput.addEventListener('touchmove', function(e){
-	e.preventDefault();
-	draw(e, ctx_objectInput);
-}, false);
-
-c_objectInput.addEventListener('touchend', disengage, false);
-
-
-// clear canvas
-clear_canvas.addEventListener('click', function(e){
-	clearCanvas(ctx_objectInput);
-});
-
-
-// Remove background image canvas 1
-remove_background_image.addEventListener('click', function(e){
-	clearCanvas(ctx_objectInput_background);
-}, false);
-
-
-
-// Eraser button for tb1
-eraser_button.addEventListener('click', function(e){
-	erase(e, this, ctx_objectInput)
-});
-
-
-// Add image on Object Canvas Layer 0
-add_background_image.addEventListener('click', function(e){
-	// var img = new Image();
-	// img.src = './images/' + document.getElementById("background_image").value + '.png';
-	let ai = document.getElementsByName('ai');
-	for(let i=0; i <ai.length ; i++){
-		if (ai[i].checked){
-			var img = ai[i].nextSibling;
-			break;
-		}
-	}
-	
-	addImage(ctx_objectInput_background, img)
-} , false);
-
-
-// Clone Element
-// clone_element.addEventListener('click', function(e){
-// 	var layer = tb2_lyr.value - 1;
-// 	ctx_temp = sc.children[layer].getContext("2d");
-// 	cloneElement(c_objectInput, ctx_temp);
-// }, false);
-
-clone_element.addEventListener('click', function(e){
-	addLayer(tb2_lyr, sc);
-	let layer = tb2_lyr.length;
-	tb2_lyr.value = layer;
-	ctx_temp = sc.children[layer-1].getContext("2d");
-	cloneElement(c_objectInput, ctx_temp);
-}, false);
-
-
-// Save Element
-btn_mf_tb1_sv.addEventListener('click', function(e){
-	saveCanvas(ctx_objectInput, ip_mb_tb1_sv.value, element_modal_window_body);
-});
-
-
-get_images.addEventListener('click', function(e){
-	fetchImages(background_image.value)
-});
-
-// Resize window
-// function called in css_init.js
-window.addEventListener('resize', resize, false);
-
-
-
-
-
-
-/**************************************************************************************************************************************************
-		 Toolbar 2 Event Listeners		Toolbar 2 Event Listeners		Toolbar 2 Event Listeners		Toolbar 2 Event Listeners
-**************************************************************************************************************************************************/
-
-
-
-// clear canvas
-
-tb2_cc.addEventListener('click', function(){
-	clearCanvas(sc.children[(tb2_lyr.value-1)].getContext("2d"));
-});
-
-
-
-// Add layer
-tb2_al.addEventListener('click', function(){
-	addLayer(tb2_lyr, sc);
-});
-
-
-// Remove Layer
-tb2_rl.addEventListener('click', function(e){
-	removeLayer(tb2_lyr, sc);
-});
-
-
-// Add scene
-tb2_as.addEventListener('click', function(e){
-	addScene(sc, sb)
-});
-
-
-// Move data
-tb2_mv.addEventListener('click', function(e){
-	drawing_mode = !drawing_mode
-	if (drawing_mode){
-		this.style.backgroundColor = "";
-	} else{
-		this.style.backgroundColor = "#2f3336";
-	}
-});
-
-
-// Eraser sc
-tb2_er.addEventListener('click', function(e){
-	erase(e, this, sc.children[tb2_lyr.value-1].getContext("2d"));
-});
-
-
-
-// Scaling a sc layer
-tb2_sc.addEventListener('change', function(e){
-	if (drawing_mode){
-		scale(this, sc.children[tb2_lyr.value-1].getContext("2d"))
-	}
-});
-
-
-// 3D effect
-tb2_3D.addEventListener('click', function(e){
-	state3D = !state3D
-	effect3D(this, sc);
-})
-
-
-// 
-tb2_fs.addEventListener('click', function(e){
-	fetchSceneImages(sc, fsi)
-});

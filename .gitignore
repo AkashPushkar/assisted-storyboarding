@@ -7,6 +7,7 @@ config.json
 __pycache__
 media/
 storyboard/**/images
+utils/
 
 # database
 db.sqlite3

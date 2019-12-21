@@ -66,6 +66,20 @@ var tb2_3D = document.getElementById("tb2-3D");
  
 var tb2_sc = document.getElementById("tb2-sc");
 
+var tb2_fs = document.getElementById("tb2-fs");
+
+var fsi = document.getElementById("fsi");
+
+var tb2_3d_lyr = document.getElementById("tb2-3d-lyr");
+
+var tb2_3D_r = document.getElementById("tb2-3D-r");
+
+var tb2_3D_l = document.getElementById("tb2-3D-l");
+
+var tb2_sc_plus = document.getElementById("tb2-sc-plus");
+
+var tb2_sc_minus = document.getElementById("tb2-sc-minus");
+
 /**************************************************************************************************/
 /**************************				Modal Window					***************************/
 /**************************************************************************************************/

@@ -95,7 +95,7 @@ def fetchSceneImages(request):
 	                x = cv2.floodFill(img, None, (j,i), (int(img[i, j-1, 0]), int(img[i, j-1, 1]), int(img[i, j-1, 2])))
     
 
-	cv2.imwrite('{}.png'.format(datetime.datetime.now().strftime('%Y%M%d%M%S%f')),img)
+	cv2.imwrite('./media/{}.png'.format(datetime.datetime.now().strftime('%Y%M%d%M%S%f')),img)
 	_ , img = cv2.imencode('.png', img)
 	img = base64.b64encode(img)
 	response = HttpResponse(img, content_type="image/png")

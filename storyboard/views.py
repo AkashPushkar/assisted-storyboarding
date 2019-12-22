@@ -65,42 +65,51 @@ def fetchImages(request):
 
 	# response = HttpResponse(x, content_type="image/png")
 	# response['Content-Disposition'] = 'attachment'
-
-
 	return response
 
 
 @csrf_exempt
 def fetchSceneImages(request):
 
-	# pdb.set_trace()
-	image = request.POST['image']
+	keys = request.POST.keys()
 
 	fs = FileSystemStorage()
 	# fs.save('1', image)	/
-	imgformat, imgstr = image.split(';base64,') 
-	ext = imgformat.split('/')[-1] 
 
-	# data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext) 
-	nparr = np.fromstring(base64.b64decode(imgstr), np.uint8)
-	img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-	# fs.save(data.name, data)
-	a = cv2.floodFill(img, None, (0,0), (255,255,255))
-	for i in range(1, np.shape(img)[0]):
-	    for j in range(1, np.shape(img)[1]):
-	        if np.sum(img[i, j, :]) == 0:
-	            if np.sum(img[i, j-1, :]) != 0:
-	                # print(j)
-	                x = cv2.floodFill(img, None, (j,i), (int(img[i, j-1, 0]), int(img[i, j-1, 1]), int(img[i, j-1, 2])))
-    
+	path = os.path.join('./media', datetime.datetime.now().strftime('%Y%M%d%M%S%f'))
+	os.mkdir(path)
+	for key in keys:
+		# pdb.set_trace()
 
-	cv2.imwrite('./media/{}.png'.format(datetime.datetime.now().strftime('%Y%M%d%M%S%f')),img)
-	_ , img = cv2.imencode('.png', img)
-	img = base64.b64encode(img)
-	response = HttpResponse(img, content_type="image/png")
+		image = request.POST[key]
+		imgformat, imgstr = image.split(';base64,') 
+		ext = imgformat.split('/')[-1] 
 
-	# pdb.set_trace()
-	response['Content-Disposition'] = 'attachment'	
+		# data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext) 
+		nparr = np.fromstring(base64.b64decode(imgstr), np.uint8)
+		img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-	return response
+		# fs.save(data.name, data)
+		a = cv2.floodFill(img, None, (0,0), (255,255,255))
+		for i in range(1, np.shape(img)[0]):
+		    for j in range(1, np.shape(img)[1]):
+		        if np.sum(img[i, j, :]) == 0:
+		            if np.sum(img[i, j-1, :]) != 0:
+		                # print(j)
+		                x = cv2.floodFill(img, None, (j,i), (int(img[i, j-1, 0]), int(img[i, j-1, 1]), int(img[i, j-1, 2])))
+	    
+
+		cv2.imwrite(os.path.join(path, '{}.png'.format(key)),img)
+	
+
+	# _ , img = cv2.imencode('.png', img)
+	# img = base64.b64encode(img)
+	# response = HttpResponse(img, content_type="image/png")
+
+	# # pdb.set_trace()
+	# response['Content-Disposition'] = 'attachment'	
+
+	# return response
+
+	return HttpResponse(True)

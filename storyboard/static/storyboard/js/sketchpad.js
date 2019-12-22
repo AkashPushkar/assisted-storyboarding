@@ -407,41 +407,38 @@ var fetchImages =  function(categoryName){
 
 // fetch images for scene canvas
 var fetchSceneImages = function(cv, fsi){
-	// let temp_cs = cv.firstElementChild.cloneNode();
+	let formData = new FormData();
 
-	// temp_cs = temp_cs.getContext("2d");
-	let img_temp = new Image();
 	for (let i=0; i < cv.children.length; i++){
 
-		let temp_cs = cv.firstElementChild.cloneNode();
+		// let temp_cs = cv.firstElementChild.cloneNode();
 
-		temp_cs = temp_cs.getContext("2d");
 		
-		let c_temp = cv.children[i];
+		// let c_temp = cv.children[i];
 		// let name = 'Layer' + i;
 		// let lib_temp = document.getElementById("mb-sb");
 		// saveCanvas(ctx_temp, name, lib_temp);
 
-		temp_cs.drawImage(c_temp, 0, 0);	
-
-		img_temp = temp_cs.canvas.toDataURL();
-
-		let formData = new FormData();
-		formData.append('image', img_temp);
-		let csrftoken = Cookies.get('csrftoken');
-		// formData.append('csrfmiddlewaretoken', $('#csrf-helper input[name="csrfmiddlewaretoken"]').attr('value'));
-
-		let headers = new Headers();
-		headers.append('X-CSRFToken', csrftoken);
-
-		serverURL = '/fetchSceneImages/'
-
-		fetch(serverURL, {
-			method: 'POST',
-			body: formData,
-			headers: headers 
-		});
+		// temp_cs.drawImage(c_temp, 0, 0);	
+		// console.log(i)
+		let img_temp = cv.children[i].toDataURL();
+		formData.append(String(i) , img_temp);
 	}
+
+
+	let csrftoken = Cookies.get('csrftoken');
+	// formData.append('csrfmiddlewaretoken', $('#csrf-helper input[name="csrfmiddlewaretoken"]').attr('value'));
+
+	let headers = new Headers();
+	headers.append('X-CSRFToken', csrftoken);
+
+	serverURL = '/fetchSceneImages/'
+
+	fetch(serverURL, {
+		method: 'POST',
+		body: formData,
+		headers: headers 
+	});
 
 };
 

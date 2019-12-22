@@ -9,7 +9,6 @@ var init = function(){
 }
 
 
-
 var resize = function(){
 
 	var imageR = new Image();

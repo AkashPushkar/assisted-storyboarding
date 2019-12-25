@@ -138,7 +138,7 @@ var clearCanvas = function(ctx){
 // Clone Element
 var cloneElement = function(ctx1, ctx2){
 
-	ctx2.drawImage(ctx1, 0, 0, ctx2.canvas.width/1.6, ctx2.canvas.height);
+	ctx2.drawImage(ctx1, 0, 0, ctx2.canvas.width, ctx2.canvas.height);
 }
 
 
@@ -406,7 +406,7 @@ var fetchImages =  function(categoryName){
 
 
 // fetch images for scene canvas
-var fetchSceneImages = function(cv, fsi){
+var fetchSceneImages = function(btn, cv, fsi){
 	let formData = new FormData();
 
 	for (let i=0; i < cv.children.length; i++){
@@ -433,12 +433,47 @@ var fetchSceneImages = function(cv, fsi){
 	headers.append('X-CSRFToken', csrftoken);
 
 	serverURL = '/fetchSceneImages/'
+	
+	btn.value = "fetching...";
+	btn.disabled = true;
 
 	fetch(serverURL, {
 		method: 'POST',
 		body: formData,
 		headers: headers 
-	});
+	
+	}).then(function(response){
+		fsi.innerHTML = "";
+		return response.blob();
+	}).then(function(blob){
+			var zip = new JSZip();
+			return zip.loadAsync(blob, {createFolders: false});
+	}).then(function(zip){
+		// a = response.file("file1").async("string");
+		zip.forEach(function(relativePath, zipEntry ){
+			zipEntry.async("blob").then(function(file){
+					let img = new Image();
+					let url = URL.createObjectURL(file);
+					img.src = url;
+					
+					i = document.createElement('input');
+					i.type = 'radio';
+					i.name = 'ai';
+					
+					l = document.createElement('label');
+					l.appendChild(i);
+					l.appendChild(img);
+					
+					
+					fsi.appendChild(l);
+					
+					btn.value = "Fetch scene";
+					btn.disabled = false;
+
+				});
+			});
+
+		});
 
 };
 

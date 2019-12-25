@@ -33,7 +33,13 @@
 
 				<!-- Color selector -->
 				<div class="btn-group p-1">
-					<input class="btn-secondary" id="tb1-lc" type="color" name="line-color" value="#000000">
+					<input class="btn btn-light" id="tb1-lc" list="categories_name" placeholder="Enter/Select category">
+					<datalist id="categories_name">
+						{% for category in categories%}
+							<option value="{{category.color}}">{{category.name}}</option>
+						{% endfor  %}
+	
+					</datalist>
 				</div>
 
 				<!-- Line width -->
@@ -225,15 +231,6 @@
 			</div>
 		</div>
 
-		<div class="row mt-3">
-			<div class="col-sm-12">
-				<div class="horizontal-scroll" id="categories">
-					<input type="button" class="btn btn-outline-primary" value="cat">
-					<input type="button" class="btn btn-outline-primary" value="dog">
-				</div>
-				
-			</div>
-		</div>
 
 		<div class="row mt-3">
 			<div class="col-sm-12">
@@ -256,7 +253,14 @@
 
 				<!-- Color selector -->
 				<div class="btn-group p-1">
-					<input class="btn-secondary" id="tb2-lc" type="color" name="line-color" value="#000000">
+					
+					<input class="btn btn-light" id="tb2-lc" list="categories_name" placeholder="Enter/Select category">
+					<datalist id="categories_name">
+						{% for category in categories%}
+							<option value="{{category.color}}">{{category.name}}</option>
+						{% endfor  %}
+	
+					</datalist>
 				</div>
 
 				<!-- Line width -->
@@ -433,15 +437,14 @@
 		<div class="row mt-3">
 			<div class= "col-sm-12">
 				<div class="canvas2-size canvas-alignment" id="sc">
-					<canvas width="800" height="500" class="canvas-inline canvas-layer" style="z-index: 0;"></canvas>
+					<canvas width="500" height="500" class="canvas-inline canvas-layer" style="z-index: 0;"></canvas>
 				</div>
 			</div>
 		</div>
 
 
 		<div class="row mt-3">
-			<div class="col-sm-12">
-				<img src="" id="fsi">
+			<div class="col-sm-12 horizontal-scroll" id="fsi">
 			</div>
 		</div>
 

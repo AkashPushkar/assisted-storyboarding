@@ -11,6 +11,7 @@ from django.core.files.storage import FileSystemStorage
 
 import pdb 
 import os
+import json
 
 import zipfile
 from io import BytesIO
@@ -23,20 +24,29 @@ import numpy as np
 
 import datetime
 
+from utils import OpenShapes
+from utils import pointCloud
+from utils import sceneImage
+
 # Create your views here.
 def index(request):
-	return render(request, 'storyboard/home.html')
+	
+	with open('utils/dataset/coco/panopticapi/panoptic_coco_categories_color.json') as file:
+		data = json.load(file)
+
+	context = {'categories': data}
+	return render(request, 'storyboard/home.html', context)
 
 
-def zip_Files(cat):
+def zip_Files(folderpath):
 
 
 	temp = BytesIO()
 	# temp = tempfile.TemporaryFile()
 	archive = zipfile.ZipFile(temp , 'w')
 
-	foldername = os.path.join('storyboard/static/storyboard/images', cat)
-	for root, dir, files in os.walk(foldername):
+	#foldername = os.path.join('storyboard/static/storyboard/images', cat)
+	for root, dir, files in os.walk(folderpath):
 		# pdb.set_trace()
 		if len(files) != 0:
 			for file in files:
@@ -46,26 +56,22 @@ def zip_Files(cat):
 	
 	return temp.getvalue()
 
-	# temp.seek(0)
-	# wrapper = FileWrapper(temp)
-
-
 
 
 @csrf_exempt
 def fetchImages(request):
 
 	# pdb.set_trace()
-	cat = request.POST.get('categoryName')
 	
-	zipped_file = zip_Files(cat)
+	cat = request.POST.get('categoryName')
+	folderpath = os.path.join('storyboard/static/storyboard/images', cat)
+	zipped_file = zip_Files(folderpath)
 
 	response = HttpResponse(zipped_file, content_type='application/zip')
 	response['Content-Disposition'] = 'attachment'
 
-	# response = HttpResponse(x, content_type="image/png")
-	# response['Content-Disposition'] = 'attachment'
 	return response
+
 
 
 @csrf_exempt
@@ -73,12 +79,21 @@ def fetchSceneImages(request):
 
 	keys = request.POST.keys()
 
-	fs = FileSystemStorage()
+	#fs = FileSystemStorage()
 	# fs.save('1', image)	/
+	
+	file = "./utils/dataset/coco/panopticapi/panoptic_coco_categories.json"
+	with open(file, 'r') as file:
+		data = json.load(file)
+	
+	rgb = {}
+	for d in data:
+		rgb[tuple([d['color'][2],d['color'][1],d['color'][0]])] = d['id']
+	
 
-
-	path = os.path.join('./media', datetime.datetime.now().strftime('%Y%M%d%M%S%f'))
-	os.mkdir(path)
+	path = os.path.join('./media', datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'))
+	os.makedirs(os.path.join(path, 'semanticLabels'))
+	os.mkdir(os.path.join(path, 'resultImages'))
 	for key in keys:
 		# pdb.set_trace()
 
@@ -91,25 +106,31 @@ def fetchSceneImages(request):
 		img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
 		# fs.save(data.name, data)
-		a = cv2.floodFill(img, None, (0,0), (255,255,255))
-		for i in range(1, np.shape(img)[0]):
-		    for j in range(1, np.shape(img)[1]):
-		        if np.sum(img[i, j, :]) == 0:
-		            if np.sum(img[i, j-1, :]) != 0:
-		                # print(j)
-		                x = cv2.floodFill(img, None, (j,i), (int(img[i, j-1, 0]), int(img[i, j-1, 1]), int(img[i, j-1, 2])))
-	    
+		cv2.floodFill(img, None, (0,0), (255,255,255))
 
-		cv2.imwrite(os.path.join(path, '{}.png'.format(key)),img)
+		for i in range(1, np.shape(img)[0]):
+			for j in range(1, np.shape(img)[1]):
+				if np.sum(img[i, j, :]) == 0:
+					if np.sum(img[i, j-1, :]) != 0:
+						if tuple(img[i,j-1,:]) in rgb.keys():
+							color = (int(img[i, j-1, 0]), int(img[i, j-1, 1]), int(img[i, j-1, 2]))
+							cv2.floodFill(img, None, (j,i), color)
+    
+		cv2.floodFill(img, None, (0,0), (0,0,0))
+		#pdb.set_trace()	
+		cv2.imwrite(os.path.join(path, 'semanticLabels', '{}.png'.format(key)),img)
+	
+	OpenShapes.main(os.path.join(path, 'semanticLabels'), os.path.join(path, 'resultImages'))
 	
 
-	# _ , img = cv2.imencode('.png', img)
-	# img = base64.b64encode(img)
-	# response = HttpResponse(img, content_type="image/png")
+	sceneImage.main(path)
+		
+	pointCloud.main(path)	
 
-	# # pdb.set_trace()
-	# response['Content-Disposition'] = 'attachment'	
+	folderpath = os.path.join(path, 'resultSceneImages')
+	zipped_file = zip_Files(folderpath)
 
-	# return response
-
-	return HttpResponse(True)
+	response = HttpResponse(zipped_file, content_type='application/zip')
+	response['Content-Disposition'] = 'attachment'
+	
+	return response

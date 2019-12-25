@@ -7,7 +7,11 @@ config.json
 __pycache__
 media/
 storyboard/**/images
-utils/
+utils/cachedir/
+utils/dataset
+utils/__pycache__
+utils/README.md
+.ipynb_checkpoints
 
 # database
 db.sqlite3

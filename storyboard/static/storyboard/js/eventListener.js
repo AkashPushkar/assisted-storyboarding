@@ -197,7 +197,7 @@ tb2_3D.addEventListener('click', function(e){
 
 // 
 tb2_fs.addEventListener('click', function(e){
-	fetchSceneImages(sc, fsi)
+	fetchSceneImages(this, sc, fsi)
 });
 
 

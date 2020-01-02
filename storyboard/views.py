@@ -104,10 +104,26 @@ def fetchSceneImages(request):
 		# data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext) 
 		nparr = np.fromstring(base64.b64decode(imgstr), np.uint8)
 		img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
+		#pdb.set_trace()
 		# fs.save(data.name, data)
-		cv2.floodFill(img, None, (0,0), (255,255,255))
-
+		
+		#pdb.set_trace()
+		
+		#outlier removal (based on comparison with category colors)
+		for i in range(np.shape(img)[0]):
+			for j in range(np.shape(img)[1]):
+				if not tuple(img[i,j,:]) in rgb.keys() :
+					img[i,j,:] = [0,0,0]
+		
+		# adding padding at top
+		img = np.uint8(np.concatenate((np.zeros((1, np.shape(img)[1], 3)), img), axis=0))
+	
+		# floodfill with blue color
+		cv2.floodFill(img, None, (0,0), (0,0,255))
+		
+		# removing padding 
+		img = img[1:,:,:]
+		
 		for i in range(1, np.shape(img)[0]):
 			for j in range(1, np.shape(img)[1]):
 				if np.sum(img[i, j, :]) == 0:
@@ -115,7 +131,9 @@ def fetchSceneImages(request):
 						if tuple(img[i,j-1,:]) in rgb.keys():
 							color = (int(img[i, j-1, 0]), int(img[i, j-1, 1]), int(img[i, j-1, 2]))
 							cv2.floodFill(img, None, (j,i), color)
-    
+					
+							
+		#pdb.set_trace()
 		cv2.floodFill(img, None, (0,0), (0,0,0))
 		#pdb.set_trace()	
 		cv2.imwrite(os.path.join(path, 'semanticLabels', '{}.png'.format(key)),img)
@@ -125,7 +143,7 @@ def fetchSceneImages(request):
 
 	sceneImage.main(path)
 		
-	pointCloud.main(path)	
+	#pointCloud.main(path)	
 
 	folderpath = os.path.join(path, 'resultSceneImages')
 	zipped_file = zip_Files(folderpath)

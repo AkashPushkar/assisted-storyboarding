@@ -29,4 +29,4 @@ def main(path):
 		pcl.colors = o3d.utility.Vector3dVector(colors/255)
 		
 		#o3d.visualization.draw_geometries([pcl])
-		o3d.io.write_point_cloud(os.path.join(path, 'pointClouds', '{}.ply'.format(imageNum)), pcl)
+		o3d.io.write_point_cloud(os.path.join(path, 'pointClouds', '{}.gltf'.format(imageNum)), pcl)

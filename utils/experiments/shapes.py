@@ -584,7 +584,8 @@ class Shapes():
 
             # --
             fin_outputs[i] = {}
-            fin_outputs[i]['im'] = cv2.resize(cv2.blur(ith_shape_part_im, (3, 3)),
-                                              dsize=(self.FIN_SIZE, self.FIN_SIZE))
+        #    fin_outputs[i]['im'] = cv2.resize(cv2.blur(ith_shape_part_im, (3, 3)),
+        #                                      dsize=(self.FIN_SIZE, self.FIN_SIZE))
 
+            fin_outputs[i]['im'] = ith_shape_part_im
         return fin_outputs

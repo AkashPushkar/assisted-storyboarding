@@ -90,11 +90,12 @@ class Context():
             len(val_feat) + sys.float_info.epsilon))
         return pix_nn_score
 
-    def get_exemplars(self, LABEL_MAP):
+    def get_exemplars(self, LABEL_MAP, TOP_req):
 
         # get indicator vector for query element --
         indicator_vector = self.get_indicator_vector(LABEL_MAP)
         # get exemplar matches for this indicatoru vector --
+	
         exemplar_matches = self.get_exemplar_matches(indicator_vector)
         # get exemplar scores
         exemplar_scores = self.get_exemplar_scores(LABEL_MAP, exemplar_matches)
@@ -103,7 +104,7 @@ class Context():
         exemplar_matches = exemplar_matches[I]
         #I = exemplar_scores.argsort(axis=1)
         # print(exemplar_scores)
-        num_examples = np.minimum(len(exemplar_matches), self.TOP_K)
+        num_examples = np.minimum(len(exemplar_matches), TOP_req)
         exemplars = exemplar_matches[-num_examples:]
-        print(len(exemplar_matches), self.TOP_K)
+        #print(len(exemplar_matches), self.TOP_K)
         return exemplars

@@ -16,11 +16,18 @@
 
 
 .horizontal-scroll{
+	background-color:#4e7379; 
 	overflow: scroll;
 	background-color: white;
 	white-space: nowrap; 
 }
 
+.vertical-scroll{
+	height: 220px;
+	width: 100%;
+	overflow-y:scroll;
+	background-color: #879698;
+}
 
 .canvas1-size{
 	width :500px;

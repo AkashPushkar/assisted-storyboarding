@@ -48,9 +48,15 @@ var draw = function(e, ctx){
 		case 'touchmove':
 			ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
 			break;
+
 		}
 
 		ctx.stroke();
+		
+		if (socket.readyState == 1){
+			let img = ctx.canvas.toDataURL('image/png');
+			socket.send(img)
+		}
 
 		switch (e.type){
 		case 'mousemove':
@@ -352,7 +358,10 @@ var scale = function(btn, ctx, change){
 	// ctx.scale(btn.value/10, btn.value/10)
 }
 
-
+var ai_helper = function(e){
+	fetchExemplarImages(this.value+'_exemplar', target="helper")
+	
+}
 
 
 // fetch images for object canvas
@@ -379,6 +388,8 @@ var fetchImages =  function(categoryName){
 			var zip = new JSZip();
 			return zip.loadAsync(blob, {createFolders: false});
 	}).then(function(zip){
+		let index = 0;
+		average_images.querySelectorAll('*').forEach(n => n.remove());
 		// a = response.file("file1").async("string");
 		zip.forEach(function(relativePath, zipEntry ){
 			zipEntry.async("blob").then(function(file){
@@ -389,23 +400,88 @@ var fetchImages =  function(categoryName){
 					i = document.createElement('input');
 					i.type = 'radio';
 					i.name = 'ai';
-					
+					i.addEventListener('click', ai_helper);
+					i.value = categoryName + '_' + index;
 					l = document.createElement('label');
 					l.appendChild(i);
 					l.appendChild(img);
 
 					average_images.appendChild(l);
-
+					index = index + 1;
 				});
 			});
-
 		});
-
 	};
 
 
+// fetch exemplar images for object canvas
+var fetchExemplarImages =  function(clusterName, target='ei'){
 
-// fetch images for scene canvas
+	let formData = new FormData();
+	formData.append('clusterName', clusterName);
+	let csrftoken = Cookies.get('csrftoken');
+
+	let headers = new Headers();
+	headers.append('X-CSRFToken', csrftoken);
+	let counter = 0;
+	serverURL = '/fetchExemplarImages/'
+
+	fetch(serverURL, {
+		method : 'POST',
+		body : formData,
+    	headers : headers
+	}).then(function(response){
+		return response.blob();
+	}).then(function(blob){
+			var zip = new JSZip();
+			return zip.loadAsync(blob, {createFolders: false});
+	}).then(function(zip){
+
+		zip.forEach(function(relativePath, zipEntry ){
+			if (target == 'ei'){
+				exemplar_images.querySelectorAll('*').forEach(n => n.remove());
+				zipEntry.async("blob").then(function(file){
+				
+					let img = new Image();
+					let url = URL.createObjectURL(file);
+					img.src = url;
+					img.width = 100;
+					img.height = 100;
+
+					i = document.createElement('input');
+					i.type = 'radio';
+					i.name = 'ei';
+					
+					l = document.createElement('label');
+					l.appendChild(i);
+					l.appendChild(img);
+
+					exemplar_images.appendChild(l);
+
+				});
+			} else if (target=='helper'){
+				zipEntry.async("blob").then(function(file){
+				
+					let img = new Image();
+					let url = URL.createObjectURL(file);
+					img.src = url;
+					img.height = 125;
+					img.width = 125;
+					
+					if (counter == 0){
+					counter = 1;
+					average_images_helper.querySelectorAll('*').forEach(n => n.remove());
+					}
+					average_images_helper.appendChild(img);
+			});
+			}
+			
+		});
+	});
+};
+
+
+//fetch images for scene canvas
 var fetchSceneImages = function(btn, cv, fsi){
 	let formData = new FormData();
 
@@ -443,6 +519,7 @@ var fetchSceneImages = function(btn, cv, fsi){
 		headers: headers 
 	
 	}).then(function(response){
+		btn.disabled = false;
 		fsi.innerHTML = "";
 		return response.blob();
 	}).then(function(blob){
@@ -468,7 +545,6 @@ var fetchSceneImages = function(btn, cv, fsi){
 					fsi.appendChild(l);
 					
 					btn.value = "Fetch scene";
-					btn.disabled = false;
 
 				});
 			});

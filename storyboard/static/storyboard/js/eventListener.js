@@ -68,6 +68,21 @@ add_background_image.addEventListener('click', function(e){
 
 
 
+// add exemplar background 
+add_exemplar_background.addEventListener('click', function(e){
+	let ai = document.getElementsByName('ei');
+	
+	for(let i=0; i <ai.length ; i++){
+		if (ai[i].checked){
+			var img = ai[i].nextSibling;
+			break;
+		}
+	}
+	
+	addImage(ctx_objectInput_background, img)
+}, false);
+
+
 // clone_element.addEventListener('click', function(e){
 // 	var layer = tb2_lyr.value - 1;
 // 	ctx_temp = sc.children[layer].getContext("2d");
@@ -90,10 +105,26 @@ btn_mf_tb1_sv.addEventListener('click', function(e){
 	saveCanvas(ctx_objectInput, ip_mb_tb1_sv.value, element_modal_window_body);
 });
 
-
+// get average images
 get_images.addEventListener('click', function(e){
 	fetchImages(background_image.value)
 });
+
+// get exemplar images
+get_exemplar_images.addEventListener('click', function(e){
+
+	let ai = document.getElementsByName('ai');
+	let clusterName
+	for(let i=0; i <ai.length ; i++){
+		if (ai[i].checked){
+			clusterName = ai[i].value;
+			break;
+		}
+	}
+
+	fetchExemplarImages(clusterName+'_edge');
+});
+
 
 // Resize window
 // function called in css_init.js
@@ -172,7 +203,7 @@ tb2_sc_plus.addEventListener('click', function(e){
 // Scaling a sc layer plus
 tb2_sc_minus.addEventListener('click', function(e){
 	if (drawing_mode){
-		scale(this, sc.children[tb2_lyr.value-1].getContext("2d"), 0.9);
+		scale(this, sc.children[tb2_lyr.value-1].getContext("2d"), 0.3);
 	}
 });
 

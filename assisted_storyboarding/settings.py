@@ -30,7 +30,7 @@ SECRET_KEY = config['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['trinity.vision.cs.cmu.edu', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['trinity.vision.cs.cmu.edu', '0.0.0.0', 'localhost', '128.2.194.167']
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'assisted_storyboarding.urls'
+ASGI_APPLICATION = "assisted_storyboarding.routing.application"
+
 
 TEMPLATES = [
     {

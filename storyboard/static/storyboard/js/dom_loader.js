@@ -2,6 +2,9 @@ var c_objectInput = document.getElementById("objectInput");
 
 var average_images = document.getElementById("average-images");
 
+var exemplar_images = document.getElementById("exemplar-images");
+
+var average_images_helper = document.getElementById("average-images-helper");
 /**************************************************************************************************/
 /**************************				Paint Toolbar 1					***************************/
 /**************************************************************************************************/
@@ -20,21 +23,22 @@ var clone_element = document.getElementById("clone_element");
 
 var clear_canvas = document.getElementById("clear_canvas");
 
-var c_objectInput_background = document.getElementById("objectInput_image_background")
+var c_objectInput_background = document.getElementById("objectInput_image_background");
 
 var add_background_image = document.getElementById("add_background_image");
 
 var tb1_lw = document.getElementById("tb1-lw");
 
-var tb1_lc = document.getElementById("tb1-lc")
+var tb1_lc = document.getElementById("tb1-lc");
 
-var get_images = document.getElementById("get_images")
+var get_images = document.getElementById("get_images");
 
-var background_image = document.getElementById("background_image")
+var background_image = document.getElementById("background_image");
 
+var get_exemplar_images = document.getElementById("get-exemplar-images");
 
+var add_exemplar_background = document.getElementById("add-exemplar-background");
 
-/**************************************************************************************************/
 /**************************				Paint Toolbar 2					***************************/
 /**************************************************************************************************/
 

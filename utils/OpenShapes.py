@@ -21,13 +21,15 @@ def main(query_path, dump_path):
 	max_exemplars = opt.TOP_K_GLBL
 	EXEMPLAR_MATCHES = np.empty((0,1), dtype='S16')
 	
+	print("1")
 	for k in range(len(query_list)):
+		print('start')
 		curr_lists = list(combinations(query_list, len(query_list)-k))
 		
 		TOP_req  = math.ceil((max_exemplars - total_exemplars)/len(list(curr_lists)))
 		
-		#pdb.set_trace()	
 		for curr_list in curr_lists:
+			print('new')
 			for i in range(len(list(curr_list))):
 				img = cv2.cvtColor(cv2.imread(os.path.join(opt.QUERY_LABEL_PATH, (list(curr_list))[i])), cv2.COLOR_BGR2RGB)
 				if i==0:
@@ -41,38 +43,39 @@ def main(query_path, dump_path):
 					img_masked = cv2.bitwise_and(img, img, mask= mask_inv)
 					
 					CONTEXT_MAP = cv2.add(CONTEXT_MAP_masked, img_masked)
-	 		
+				print(i)
 	
 			CONTEXT_MAP = np.array(CONTEXT_MAP, dtype=np.uint32)	
 			LABEL_CONTEXT_MAP = np.uint8(shapes.convert_colors_to_labels(CONTEXT_MAP))
-			
+			print("top {}".format(TOP_req))
 			# GET THE EXEMPLAR MATCHES -- 
 			matches =  context.get_exemplars(LABEL_CONTEXT_MAP, TOP_req)
-			#pdb.set_trace()
+			print('return')
 			EXEMPLAR_MATCHES = np.concatenate((EXEMPLAR_MATCHES, matches), axis=0)
 			total_exemplars = total_exemplars + len(matches)
-			
-			print(curr_list, total_exemplars)	
+			print("te {}".format(total_exemplars))
 		if total_exemplars >= max_exemplars:
 			break
 	
 	for i in range(0,len(query_list)):
 		# READ THE IMAGE -- 
 		#print('FILE NAME: ' + query_list[i])
-			
+		print('2nd start')	
 		ith_DUMP_DATA_PATH = os.path.join(dump_path, (query_list[i]).replace('.png', '/'))
 		if not os.path.exists(ith_DUMP_DATA_PATH):
 	                        os.makedirs(ith_DUMP_DATA_PATH)
-		
+		print(ith_DUMP_DATA_PATH)
 		input_map = np.array(cv2.cvtColor(cv2.imread(os.path.join(opt.QUERY_LABEL_PATH, query_list[i])), cv2.COLOR_BGR2RGB), dtype=np.uint32)
 		
 #		input_map = np.array(cropped_image, dtype=np.uint32)
 		instance_map = np.array(cv2.imread(os.path.join(opt.QUERY_INST_PATH,  query_list[i])), dtype=np.uint32)
 
-		
+		print(3)
 		LABEL_MAP = np.uint8(shapes.convert_colors_to_labels(input_map))
 		INST_MAP = np.int32(instance_map)
+		
 		# GET THE IMAGE OUTPUTS -- 
+		print(4)
 		image_outputs = shapes.get_outputs(LABEL_MAP, INST_MAP, EXEMPLAR_MATCHES)
 		print(i)
 		fin_outputs = shapes.finalize_images(image_outputs)

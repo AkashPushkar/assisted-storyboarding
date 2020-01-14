@@ -91,14 +91,21 @@ class Context():
         return pix_nn_score
 
     def get_exemplars(self, LABEL_MAP, TOP_req):
-
+        print("exemplars")
         # get indicator vector for query element --
         indicator_vector = self.get_indicator_vector(LABEL_MAP)
+        
+
         # get exemplar matches for this indicatoru vector --
 	
+        print(1)
         exemplar_matches = self.get_exemplar_matches(indicator_vector)
+        
+        print(2) 
         # get exemplar scores
         exemplar_scores = self.get_exemplar_scores(LABEL_MAP, exemplar_matches)
+        
+        print(3)
         # sort the exexmplars on the basis of scores and return TOP_K
         I = np.argsort(exemplar_scores, axis=0)
         exemplar_matches = exemplar_matches[I]

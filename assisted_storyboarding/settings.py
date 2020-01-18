@@ -30,7 +30,7 @@ SECRET_KEY = config['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['trinity.vision.cs.cmu.edu', '0.0.0.0', 'localhost', '128.2.194.167']
+ALLOWED_HOSTS = ['trinity.vision.cs.cmu.edu', '0.0.0.0', 'localhost', '128.2.194.167', 'scs00197.sp.cs.cmu.edu']
 
 
 # Application definition

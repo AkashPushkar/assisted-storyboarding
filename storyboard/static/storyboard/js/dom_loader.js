@@ -1,93 +1,91 @@
-var c_objectInput = document.getElementById("objectInput");
+// Color Pallette - Selected category Color
 
-var average_images = document.getElementById("average-images");
 
-var exemplar_images = document.getElementById("exemplar-images");
 
-var average_images_helper = document.getElementById("average-images-helper");
+// var cat = document.querySelectorAll('input[name="cat"]:checked')[0].value;
+var cat = document.querySelectorAll('input[name="cat"]');
+
+var tb1_sc = document.getElementById("tb1-sc");
+
+// Prior
+var prior = document.getElementById("prior");
+
 /**************************************************************************************************/
-/**************************				Paint Toolbar 1					***************************/
+/**************************				Paint Toolbar 					***************************/
 /**************************************************************************************************/
 
-var remove_background_image = document.getElementById("remove_background_image");
+// Line width
+var tb1_lw = document.getElementById("tb1-lw");
 
-var eraser_button = document.getElementById("eraser_button");
+//  Eraser
+var tb1_er = document.getElementById("tb1-er");
 
+// Eraser size 
 var tb1_es = document.getElementById("tb1-es");
+
+// Undo
+
+
+//  Redo
+
+
+// Save
+var tb1_sv = document.getElementById("tb1-sv");
+
+var ip_mb_tb1_sv = document.getElementById("ip-mb-tb1-sv");
 
 var btn_mf_tb1_sv = document.getElementById("btn-mf-tb1-sv");
 
 var element_modal_window_body = document.getElementById("elementModalWindowBody");
 
-var clone_element = document.getElementById("clone_element");
 
-var clear_canvas = document.getElementById("clear_canvas");
+// Download
+var tb1_dw = document.getElementById("tb1-dw");
 
-var c_objectInput_background = document.getElementById("objectInput_image_background");
+// Copy
+var tb1_cp = document.getElementById("tb1-cp");
 
-var add_background_image = document.getElementById("add_background_image");
+// Move
+var tb1_mv = document.getElementById("tb1-mv");
 
-var tb1_lw = document.getElementById("tb1-lw");
+// Hide/Unhide all layers (except current)
+var tb1_vl = document.getElementById("tb1-vl");
 
-var tb1_lc = document.getElementById("tb1-lc");
+// Clear canvas
+var tb1_cc = document.getElementById("tb1-cc");
 
-var get_images = document.getElementById("get_images");
+// add layer
+var tb1_al = document.getElementById("tb1-al");
 
-var background_image = document.getElementById("background_image");
+// remove layer
+var tb1_rl = document.getElementById("tb1-rl");
 
-var get_exemplar_images = document.getElementById("get-exemplar-images");
 
-var add_exemplar_background = document.getElementById("add-exemplar-background");
-
-/**************************				Paint Toolbar 2					***************************/
-/**************************************************************************************************/
-
-var tb2_as = document.getElementById("tb2-as");
-
-var tb2_al = document.getElementById("tb2-al");
-
-var tb2_lyr =  document.getElementById("tb2-lyr");
-
-var sc = document.getElementById("sc");
-
-var tb2_sv = document.getElementById("tb2-sv");
-
-var tb2_lw = document.getElementById("tb2-lw");
-
-var tb2_lc = document.getElementById("tb2-lc");
-
-var tb2_er = document.getElementById("tb2-er")
-
-var tb2_es = document.getElementById("tb2-es");
-
-var tb2_cc = document.getElementById("tb2-cc");
-
-var tb2_rl = document.getElementById("tb2-rl");
-
-var tb2_mv = document.getElementById("tb2-mv");
-
-var tb2_3D = document.getElementById("tb2-3D");
- 
-var tb2_sc = document.getElementById("tb2-sc");
-
-var tb2_fs = document.getElementById("tb2-fs");
+var tb1_fs = document.getElementById("tb1-fs");
 
 var fsi = document.getElementById("fsi");
 
-var tb2_3d_lyr = document.getElementById("tb2-3d-lyr");
 
-var tb2_3D_r = document.getElementById("tb2-3D-r");
-
-var tb2_3D_l = document.getElementById("tb2-3D-l");
-
-var tb2_sc_plus = document.getElementById("tb2-sc-plus");
-
-var tb2_sc_minus = document.getElementById("tb2-sc-minus");
 
 /**************************************************************************************************/
-/**************************				Modal Window					***************************/
+/**************************				Slider Ui			***************************/
 /**************************************************************************************************/
-var ip_mb_tb1_sv = document.getElementById("ip-mb-tb1-sv");
 
+
+
+/**************************************************************************************************/
+/**************************				Canvas					***************************/
+/**************************************************************************************************/
+
+// Shadow canvas (z=100)
+var cv_shadow = document.getElementById("cv-shadow");
+
+// Scene Canvases - parent div 
+var sc = document.getElementById("sc");
+
+
+/**************************************************************************************************/
+/**************************				Storyboard					***************************/
+/**************************************************************************************************/
 
 var sb = document.getElementById("sb");

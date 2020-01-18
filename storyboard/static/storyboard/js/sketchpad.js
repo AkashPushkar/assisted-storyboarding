@@ -3,25 +3,25 @@
 					Global Declaration
 ********************************************************************************************************/
 
-
-var ctx_objectInput = c_objectInput.getContext("2d");
-
-var ctx_objectInput_background = c_objectInput_background.getContext("2d");
+// Context shadow canvas
+var ctx_shadow = cv_shadow.getContext("2d");
 
 var rect;
 
-
 // Drawing line properties 
 var paint = false
-ctx_objectInput.lineJoin = 'round'
-ctx_objectInput.lineCap = 'round'
-
+ctx_shadow.lineJoin = 'round'
+ctx_shadow.lineCap = 'round'
 
 // Eraser
 var eraser = false
 
 
-// var Drawing mode
+// automatic layer  tracking 
+var automaticlayer = 0;
+
+
+// Drawing mode (boolean)
 var drawing_mode = true
 
 // data to be moved in sc
@@ -30,16 +30,36 @@ var move_data
 var moving = false
 var initial_X, initial_Y
 
-
 let state3D = false
 
+let flag;
+// Slider 
+var unconstrainedSlider = document.getElementById('sl-lyr');
 
+var color = '';
 
+options = {
+	start: [1],
+    behaviour: 'unconstrained-tap',
+    // connect: true,
+    step: 1,
+    tooltips: [true],
+    range: {
+        'min': 0,
+        'max': 20
+    }
+};
 
+noUiSlider.create(unconstrainedSlider, options);
 
+var activeLayer = 0;
+
+// Draw
 var draw = function(e, ctx){
 	
+
 	// e.preventDefault();
+	automaticlayer = 0;
 	if(paint == true){
 		switch (e.type){
 		case 'mousemove':
@@ -71,7 +91,7 @@ var draw = function(e, ctx){
 	}
 }
 
-
+// Starting mouse pointer
 var engage = function(e, ctx, es, lw, lc){
 
 	// e.preventDefault();
@@ -99,17 +119,15 @@ var engage = function(e, ctx, es, lw, lc){
 	paint = true;
 }
 
-
-
-
+// Stopping mouse pointer
 var disengage = function(e){
 	e.preventDefault();
 	paint = false;
 	moving = false;
+	updateSlider()
 }
 
-
-
+// Eraser (on/off)
 var erase = function(e, btn, ctx){
 	eraser = !eraser
 	if (eraser){
@@ -123,36 +141,13 @@ var erase = function(e, btn, ctx){
 
 
 
-
-// Adding image background
-
-var addImage = function(ctx, img){
-	ctx.drawImage(img, 0, 0, ctx.canvas.width, ctx.canvas.height);
+var changeColor = function(){
+	let q = document.querySelectorAll('input[name="cat"]:checked')[0];
+	color = q.value;
+	tb1_sc.innerHTML = q.nextElementSibling.innerHTML;
 }
-
-
-
-
-
-// Remove image
-var clearCanvas = function(ctx){
-	ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height)
-}
-
-
-
-// Clone Element
-var cloneElement = function(ctx1, ctx2){
-
-	ctx2.drawImage(ctx1, 0, 0, ctx2.canvas.width, ctx2.canvas.height);
-}
-
-
-
-
 
 // Save Single Canvas
-
 var saveCanvas = function(ctx, name, lib) {
 	img_element = ctx.canvas.toDataURL();
 	var temp_img = new Image();
@@ -178,52 +173,44 @@ var saveCanvas = function(ctx, name, lib) {
 
 
 // add Layer
-var addLayer = function(list, cv){
-	var temp = document.createElement("option");
-	var value = list.children.length;
-	temp.setAttribute('value',(value+1));
-	temp.appendChild(document.createTextNode('Layer ' + (value+1)));
-
-	list.appendChild(temp)
+var addLayer = function(cv){
 
 	temp = cv.lastElementChild.cloneNode();
-	
 	temp.style.zIndex = (parseInt(temp.style.zIndex) + 1);
 	temp.getContext("2d").lineJoin = 'round';
 	temp.getContext("2d").lineCap = 'round';
-
 	cv.appendChild(temp);
 
-	changeSCEventListener(value-1, value);
+	if (cv.childElementCount > 1){
+		tb1_rl.disabled = false;
+	}
+	
 };
 
 
 // remove layer
-var removeLayer = function(list, cv){
-	result = window.confirm("Do you really want to delete the layer? (This will delete the layer and reaarange the layer names)");
+var removeLayer = function(list){
+	result = window.confirm("Do you really want to delete the active layer?");
 	if (result==true){
-		if (list.value == list.lastElementChild.value){
-			changeSCEventListener(list.lastElementChild.value-1, (list.lastElementChild.value-2));
-		}
-		
-		cv.removeChild(cv.children[list.value-1]);
-		list.removeChild(list.lastElementChild);
+		list.removeChild(list.children[activeLayer]);
+	}
+
+	if (list.childElementCount == 1){
+		tb1_rl.disabled = true;
 	}
 }
 
 
+// Clear Canvas
+var clearCanvas = function(ctx){
+	ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+}
 
 
 // Add scene canvas to storyboard
 var addScene = function(cv, lib){
-	// var img_temp = new Image();
-	// var temp_btn = document.createElement("button");
 
-	// temp_btn.setAttribute("data-toggle","modal");
-	// temp_btn.setAttribute("data-target","modal");
-	
-	var temp_cs = cv.firstElementChild.cloneNode();
-
+	let temp_cs = cv.firstElementChild.cloneNode();
 	temp_cs = temp_cs.getContext("2d");
 
 	for (var i=0; i < cv.children.length; i++){
@@ -232,7 +219,6 @@ var addScene = function(cv, lib){
 		var name = 'Layer' + i;
 		var lib_temp = document.getElementById("mb-sb");
 		saveCanvas(ctx_temp, name, lib_temp);
-
 		temp_cs.drawImage(ctx_temp.canvas, 0, 0);	
 
 	}
@@ -249,119 +235,119 @@ var addScene = function(cv, lib){
 
 
 
-// move the data in a given layer
-var moveGetData = function(e, ctx){
-	rect = ctx.canvas.getBoundingClientRect();
-	initial_X = e.clientX - rect.left;
-	initial_Y = e.clientY - rect.top;
-	move_data = ctx.getImageData(0,0, ctx.canvas.width, ctx.canvas.height);
-	moving = true
-}
-
-
-var movePutData = function(e, ctx){
-	if (moving){
-		ctx.clearRect(0,0, ctx.canvas.width, ctx.canvas.height);
-		ctx.putImageData(move_data, e.clientX-rect.left -initial_X, e.clientY - rect.top-initial_Y);
-		// ctx.translate(e.clientX-rect.left-initial_X, e.clientY-rect.top-initial_Y);
-	}
-}
-
-
-var scEngagePre = function(e){
-	e.preventDefault();
-	if (drawing_mode == true){
-		engage(e, sc.children[tb2_lyr.value-1].getContext("2d"), tb2_es.value, tb2_lw.value, tb2_lc.value);
-	} else{
-		moveGetData(e, sc.children[tb2_lyr.value-1].getContext("2d"))
-	}
-
-};
-
-var scDrawPre = function(e){
-	e.preventDefault();
-	if (drawing_mode == true){
-		draw(e, sc.children[tb2_lyr.value-1].getContext("2d"));
-	} else{
-		movePutData(e, sc.children[tb2_lyr.value-1].getContext("2d"))
-	}
-
-};
-
-
-
-
-// Scene Canvas - Active Canvas
-var changeSCEventListener = function(previous, current){
-	
-	if (sc.children[previous]) {
-		sc.children[previous].removeEventListener("mousedown", scEngagePre);
-		sc.children[previous].removeEventListener("mousemove", scDrawPre);
-		sc.children[previous].removeEventListener("mouseup", disengage);
-		sc.children[previous].removeEventListener("mouseleave", disengage);
-	}
-
-
-	sc.children[current].addEventListener("mousedown", scEngagePre);
-	sc.children[current].addEventListener("mousemove", scDrawPre);
-	sc.children[current].addEventListener("mouseup", disengage);
-	sc.children[current].addEventListener("mouseleave", disengage);
-};
-
-
-
-// CSS 3d visualization of the scene canvas
-var effect3D = function(btn, scene){
+// 3d visualization of the canvas
+var layerVisibility = function(scene){
 	if (state3D == true){
-		btn.style.backgroundColor = "#2f3336";
-		scene.style.border = "#2f3336"
-		scene.style.perspective = '20em'
 		for(var i=0; i<scene.children.length; i++){
-			scene.children[i].style.transform = 'translateZ('+(i*(-50))+'px) rotateY(0deg)';
-			scene.children[i].style.border = "0";
+			if (i != activeLayer){
+				scene.children[i].style.opacity = "0";
+			}
 		}
 	} else {
-		btn.style.backgroundColor = ""
 		for(var i=0; i<scene.children.length; i++){
-			scene.children[i].style.transform = '';
-			scene.children[i].style.border = "";
+			scene.children[i].style.opacity = "";
 		}
 	} 
-
-
 };
 
 
 // Scaling of layer
 var scale = function(btn, ctx, change){
-	// let temp_img = new Image()
-	// let temp_img = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.width);
-	// temp_img.src = ctx.canvas.toDataURL()
-	// ctx.putImageData(temp_img, 0, 0, change*ctx.canvas.width , change*ctx.canvas.height);
 
 	let cv = new OffscreenCanvas(ctx.canvas.width, ctx.canvas.height)
 	cv = cv.getContext("2d")
 	cv.drawImage(ctx.canvas, 0, 0)
 	ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width)
 	ctx.drawImage(cv.canvas, 0, 0, change*ctx.canvas.width , change*ctx.canvas.height)
-
-	// let c2s = new C2S(ctx.canvas.width, ctx.canvas.height); 
-	// c2s.drawImage(ctx.canvas, 0, 0, ctx.canvas.width, ctx.canvas.height);
-	// let data = c2s.getSerializedSvg(true)
-	// let temp_img = new Image();
-	// let data = c2s.getSerializedSvg(true);
-	// temp_img.src = c2s.getSerializedSvg(true);
-
-	// ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.width);
-	// ctx.drawImage(temp_img, 0, 0, change*ctx.canvas.width , change*ctx.canvas.height);
-
-	// ctx.scale(btn.value/10, btn.value/10)
 }
 
-var ai_helper = function(e){
-	fetchExemplarImages(this.value+'_exemplar', target="helper")
+
+var updateSliderOptions = function(type){
+	let loc = unconstrainedSlider.noUiSlider.get();
+	// console.log(typeof(loc));
+	if (type == 'add'){
+		if (sc.children.length >= 3){
+			loc.push("0.00");
+			options.start = loc;
+		} else if (sc.children.length == 2){
+			loc = Array(loc);
+			loc.push("0.00");
+			options.start = loc;
+		}
+	} else if (type == "remove"){
+		loc.splice(activeLayer, 1);
+		options.start = loc;
+		activeLayer = 0;
+	}
 	
+	options.tooltips = Array(sc.childElementCount).fill(true);
+
 }
+
+
+
+
+var layer3D = function(){
+
+	unconstrainedSlider.noUiSlider.destroy();
+	noUiSlider.create(unconstrainedSlider, options);
+
+	let handles = document.getElementsByClassName('noUi-handle');
+	let w = sc.children[0].width/4;
+	let h = sc.children[0].height/4;
+
+	for (let i=0; i<sc.children.length; i++){
+
+		let cv_temp = document.createElement('canvas');
+		cv_temp.width = w;
+		cv_temp.height = h;
+
+		cv_temp.getContext("2d").drawImage(sc.children[i], 0,0, w, h);
+		let url = cv_temp.toDataURL("image/jpg");
+
+		handles[i].style.backgroundImage = 'url('+url+')';
+		handles[i].style.width = w + 'px';
+		handles[i].style.height = h +'px';
+		handles[i].style.opacity = '0.8';
+		handles[i].style.transform = 'skew(0deg, 20deg)';
+	}
+
+	handles[activeLayer].style.border = "5px solid red";
+
+    unconstrainedSlider.noUiSlider.on('end', function(values, handle){
+    	handles[activeLayer].style.border = "";
+    	if (state3D == true){
+    		sc.children[activeLayer].style.opacity = "0";
+    	}
+
+    	activeLayer = handle;
+
+    	handles[activeLayer].style.border = "5px solid red";
+    	if (state3D == true){
+    		sc.children[activeLayer].style.opacity = "";
+    	}
+
+    });
+	
+};
+
+
+var updateSlider = function(){
+	let handles = document.getElementsByClassName('noUi-handle');
+	
+	let w = sc.children[0].width/4;
+	let h = sc.children[0].height/4;
+
+	let cv_temp = document.createElement('canvas');
+	cv_temp.width = w;
+	cv_temp.height = h;
+
+	cv_temp.getContext("2d").drawImage(sc.children[activeLayer], 0,0, w, h);
+	let url = cv_temp.toDataURL("image/jpg");
+	
+	handles[activeLayer].style.backgroundImage = 'url('+url+')';
+}
+
 
 
 // fetch images for object canvas
@@ -389,7 +375,7 @@ var fetchImages =  function(categoryName){
 			return zip.loadAsync(blob, {createFolders: false});
 	}).then(function(zip){
 		let index = 0;
-		average_images.querySelectorAll('*').forEach(n => n.remove());
+		prior.querySelectorAll('*').forEach(n => n.remove());
 		// a = response.file("file1").async("string");
 		zip.forEach(function(relativePath, zipEntry ){
 			zipEntry.async("blob").then(function(file){
@@ -400,85 +386,22 @@ var fetchImages =  function(categoryName){
 					i = document.createElement('input');
 					i.type = 'radio';
 					i.name = 'ai';
-					i.addEventListener('click', ai_helper);
 					i.value = categoryName + '_' + index;
+					if (index == 0){
+						i.checked = true;
+					}
 					l = document.createElement('label');
 					l.appendChild(i);
 					l.appendChild(img);
 
-					average_images.appendChild(l);
+					prior.appendChild(l);
 					index = index + 1;
 				});
 			});
 		});
+
 	};
 
-
-// fetch exemplar images for object canvas
-var fetchExemplarImages =  function(clusterName, target='ei'){
-
-	let formData = new FormData();
-	formData.append('clusterName', clusterName);
-	let csrftoken = Cookies.get('csrftoken');
-
-	let headers = new Headers();
-	headers.append('X-CSRFToken', csrftoken);
-	let counter = 0;
-	serverURL = '/fetchExemplarImages/'
-
-	fetch(serverURL, {
-		method : 'POST',
-		body : formData,
-    	headers : headers
-	}).then(function(response){
-		return response.blob();
-	}).then(function(blob){
-			var zip = new JSZip();
-			return zip.loadAsync(blob, {createFolders: false});
-	}).then(function(zip){
-
-		zip.forEach(function(relativePath, zipEntry ){
-			if (target == 'ei'){
-				exemplar_images.querySelectorAll('*').forEach(n => n.remove());
-				zipEntry.async("blob").then(function(file){
-				
-					let img = new Image();
-					let url = URL.createObjectURL(file);
-					img.src = url;
-					img.width = 100;
-					img.height = 100;
-
-					i = document.createElement('input');
-					i.type = 'radio';
-					i.name = 'ei';
-					
-					l = document.createElement('label');
-					l.appendChild(i);
-					l.appendChild(img);
-
-					exemplar_images.appendChild(l);
-
-				});
-			} else if (target=='helper'){
-				zipEntry.async("blob").then(function(file){
-				
-					let img = new Image();
-					let url = URL.createObjectURL(file);
-					img.src = url;
-					img.height = 125;
-					img.width = 125;
-					
-					if (counter == 0){
-					counter = 1;
-					average_images_helper.querySelectorAll('*').forEach(n => n.remove());
-					}
-					average_images_helper.appendChild(img);
-			});
-			}
-			
-		});
-	});
-};
 
 
 //fetch images for scene canvas
@@ -487,16 +410,6 @@ var fetchSceneImages = function(btn, cv, fsi){
 
 	for (let i=0; i < cv.children.length; i++){
 
-		// let temp_cs = cv.firstElementChild.cloneNode();
-
-		
-		// let c_temp = cv.children[i];
-		// let name = 'Layer' + i;
-		// let lib_temp = document.getElementById("mb-sb");
-		// saveCanvas(ctx_temp, name, lib_temp);
-
-		// temp_cs.drawImage(c_temp, 0, 0);	
-		// console.log(i)
 		let img_temp = cv.children[i].toDataURL();
 		formData.append(String(i) , img_temp);
 	}
@@ -555,21 +468,5 @@ var fetchSceneImages = function(btn, cv, fsi){
 
 
 
-// self-executing anonymous function for activating scene canvas
-(function(){
-	var previous, current;
-	tb2_lyr.addEventListener('focus', function(){
-		previous = this.value;
-	});
 
-	tb2_lyr.addEventListener('change', function(){
-		current = this.value;
-		// changeSCEventListener(previous-1, current-1);
-	});
-	
-	window.onload(changeSCEventListener(tb2_lyr.value-1, tb2_lyr.value-1));
-
-})();
-
-
-
+window.onload = layer3D

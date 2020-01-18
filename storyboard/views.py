@@ -32,7 +32,7 @@ from utils import sceneImage
 # Create your views here.
 def index(request):
         
-        with open('utils/dataset/coco/panopticapi/panoptic_coco_categories_color.json') as file:
+        with open('utils/dataset/coco/panopticapi/panoptic_coco_categories_cat.json') as file:
                 data = json.load(file)
 
         context = {'categories': data}

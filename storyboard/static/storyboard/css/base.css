@@ -1,17 +1,38 @@
-.canvas-inline{
-	display: inline-block;
-	border:1px solid #000000;
+.canvas-alignment{
+	position: absolute;
+	margin-right: auto;
+    margin-left: auto;
 }
 
-.canvas-block{
-	display: block;
-	border:1px solid #000000;
-}
 
 .canvas-layer{
 	position: absolute;
 	top: 0;
 	left: 0;
+}
+
+
+.canvas-inline{
+	display: inline-block;
+	border:1px solid #000000;
+}
+
+
+.canvas-size{
+	width :500px;
+	height :500px;
+}
+
+
+
+.tool-bar{
+	background-color: #80d8e4;
+}
+
+
+
+.category-palette{
+	background-color: #c0cdd0;
 }
 
 
@@ -23,40 +44,16 @@
 }
 
 .vertical-scroll{
-	height: 220px;
-	width: 100%;
-	overflow-y:scroll;
+	overflow-y: scroll;
 	background-color: #879698;
-}
-
-.canvas1-size{
-	width :500px;
-	height :500px;
-}
-
-.canvas-alignment{
-	position: relative;
-	margin-right: auto;
-    margin-left: auto;
+	height: 800px;
 }
 
 
-.canvas2-size{
-	width: 500px;
-	height: 500px;
-}
-
-.tool-bar1{
-	background-color: #3b5d64;
-}
-
-.tool-bar2{
-	background-color: #a5d66e;
-}
 
 
 /* HIDE RADIO */
-[type=radio] { 
+[name='ai'] { 
   position: absolute;
   opacity: 0;
   width: 0;
@@ -64,12 +61,19 @@
 }
 
 /* IMAGE STYLES */
-[type=radio] + img {
+[name='ai'] + img {
   cursor: pointer;
   margin-right: 2em;
 }
 
 /* CHECKED STYLES */
-[type=radio]:checked + img {
+[name='ai']:checked + img {
   outline: 2px solid #f00;
+}
+
+
+
+/*Overriding Bootstrap CSS*/
+.btn{
+	white-space: normal;
 }
